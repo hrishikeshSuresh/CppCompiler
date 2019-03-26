@@ -10,9 +10,15 @@ WHITE='\033[01;37m'
 BOLD='\033[1m'
 UNDERLINE='\033[4m'
 
+echo -e "${PURPLE}			Compiling grammar....${PURPLE}"
+tput sgr0
 yacc -d grammar.y
+echo -e "${YELLOW}			Compiling lexer....${YELLOW}"
+tput sgr0
 lex scanner.l
+echo -e "${WHITE}			Compiling all files....${WHITE}"
+tput sgr0
 g++ -std=c++14 -Wall -Wcomment lex.yy.c y.tab.c -ll -ly
-echo -e "${CYAN}Now run ./a.out with your input file as an argument${CYAN}"
+echo -e "${CYAN}		Now run ./a.out with your input file as an argument${CYAN}"
 tput sgr0
 #./a.out input.cpp > output.txt
