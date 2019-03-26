@@ -2,6 +2,6 @@
 
 <h3> C++ compiler written in C++ </h3>
 <h3> REQUIREMENTS </h3>
-1. g++ with C++14
-2. Bison
-3. Lex
+1. g++ with C++14<br>
+2. Bison<br>
+3. Lex<br>
