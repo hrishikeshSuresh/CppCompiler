@@ -19,6 +19,7 @@
 	int yylex();
 	// declare yywarp here, if you want to use it
 	extern int lineno;
+	//ASTNode *ast_root;
 	int list_declr_flag = 0;
 %}
 
@@ -57,9 +58,9 @@
 
 %%
 
-P : program			{ 	
-						// AST code
-						ast_root = newASTNode("P"); 
+P : program			
+					{ 	
+						// AST code 
 						push_into_AST(ast_root, "program");
 						std::cout << "AST " << ast_root->symbol << std::endl; 
 					}
@@ -69,7 +70,9 @@ program
 		: external_declaration	
 					{
 						// AST code
-						//std::cout << "AST " << ast_root->symbol << std::endl;
+						//ast_root = newASTNode("program"); 
+						//push_into_AST(ast_root, "external_declaration");
+						std::cout << "AST " << ast_root->symbol << std::endl;
 					}
 		| program external_declaration
 		;
@@ -424,6 +427,6 @@ int main(int argc, char *argv[])
 	LevelOrderTraversal(root);
 
 	// abstract syntax tree traversal
-	LevelOrderTraversalAST(ast_root);
+	LevelOrderTraversalAST(c_root);
     return 0;
 }

@@ -49,4 +49,6 @@ void push_into_AST(struct ASTNode *root, std::string ASTNode_value)
 	(root->children).push_back(newASTNode(ASTNode_value));
 }
 
-ASTNode *ast_root;
+ASTNode *ast_root = newASTNode("P");
+//ASTNode *ast_root = c_root;
+ASTNode *c_root = ast_root;
