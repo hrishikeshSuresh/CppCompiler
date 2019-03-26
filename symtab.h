@@ -39,7 +39,7 @@ class entry{
 /*	represents symbol table for a scope */
 struct Node{
 	std::unordered_map<std::string, entry> symbolTable;
-	std::vector< Node*> child;
+	std::vector<Node *> child;
 	Node* parent;
 };
 

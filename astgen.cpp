@@ -12,7 +12,7 @@
 struct ASTNode{
 	std::string symbol;
 	std::string addr;
-	std::vector<ASTNode *> children;
+	std::vector<ASTNode *> child;
 };
 
 ASTNode *newASTNode(std::string ASTNode_value)
@@ -23,32 +23,42 @@ ASTNode *newASTNode(std::string ASTNode_value)
 	return temp;
 }
 
+ASTNode *ast_root = newASTNode("P");
+ASTNode *c_root = ast_root;
+
+void move_to_next_level(std::string node_value){
+	ASTNode *newASTNode = new ASTNode;
+	newASTNode->symbol = node_value;
+	(ast_root->child).push_back(newASTNode);
+	ast_root = newASTNode;
+}
+
 void LevelOrderTraversalAST(ASTNode *root)
 {
 	if(root == NULL)
 		return;
-	std::queue<ASTNode *> q;
+	std::queue<ASTNode*> q;
 	q.push(root);
+	int i = 0;
 	while(!q.empty()){
 		int n = q.size();
+		std::cout << "Level " << i << std::endl;
 		while(n>0){
 			ASTNode *p = q.front();
 			q.pop();
-			std::cout << p->symbol << std::endl;
-			for(int i=0; i<int(p->children.size()); i++){
-				q.push(p->children[i]);
+			std::cout << p->symbol << " ";
+			for(int i=0; i<int(p->child.size()); i++){
+				q.push(p->child[i]);
 			}
 			n--;
 		}
+		std::cout << std::endl;
+		i++;
 	}
 	std::cout << std::endl;
 }
 
-void push_into_AST(struct ASTNode *root, std::string ASTNode_value)
+void push_into_AST(std::string ASTNode_value)
 {
-	(root->children).push_back(newASTNode(ASTNode_value));
+	(ast_root->child).push_back(newASTNode(ASTNode_value));
 }
-
-ASTNode *ast_root = newASTNode("P");
-//ASTNode *ast_root = c_root;
-ASTNode *c_root = ast_root;

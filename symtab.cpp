@@ -198,12 +198,3 @@ void decr_scope(){
 	//curr_scope--;
 //}
 
-
-
-
-
-
-
-
-
-
