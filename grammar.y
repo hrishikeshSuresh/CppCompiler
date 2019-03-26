@@ -20,7 +20,6 @@
 	// declare yywarp here, if you want to use it
 	extern int lineno;
 	int list_declr_flag = 0;
-	ASTNode *ast_root;
 %}
 
 %union{
@@ -58,11 +57,20 @@
 
 %%
 
-P : program			{ ast_root = newASTNode("P"); }
+P : program			{ 	
+						// AST code
+						ast_root = newASTNode("P"); 
+						push_into_AST(ast_root, "program");
+						std::cout << "AST " << ast_root->symbol << std::endl; 
+					}
   ;
 
 program	
-		: external_declaration
+		: external_declaration	
+					{
+						// AST code
+						//std::cout << "AST " << ast_root->symbol << std::endl;
+					}
 		| program external_declaration
 		;
 
