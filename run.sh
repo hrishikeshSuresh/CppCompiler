@@ -12,7 +12,9 @@ UNDERLINE='\033[4m'
 
 echo -e "${PURPLE}			Compiling grammar....${PURPLE}"
 tput sgr0
+echo -e "${RED}"
 yacc -d grammar.y
+tput sgr0
 echo -e "${YELLOW}			Compiling lexer....${YELLOW}"
 tput sgr0
 lex scanner.l
