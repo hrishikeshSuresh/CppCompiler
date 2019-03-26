@@ -35,7 +35,7 @@ class test{
 
 int main(){
 	int a;
-	a=3,b=2;
+	a=3;
 	int d=2, c=2;
 	double array[5][5][5];
 	cout << "Hello";
