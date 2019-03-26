@@ -2,12 +2,13 @@
 
 	#include<bits/stdc++.h>
 	#include "symtab.cpp"
+	#include "astgen.cpp"
 	void yyerror(const char *s);
 	extern int yylineno;
 	extern char* yytext;
 	using namespace std;
 	int yylex();
-	//int yywrap();
+	// declare yywarp here, if you want to use it
 	extern int lineno;
 	int list_declr_flag = 0;
 
@@ -27,280 +28,340 @@
 %token T_STRING_VAL T_CHAR_VAL T_COUT T_CIN
 %left '(' ')' '+' '*' '-' '/'
 
-%start P
+%start P	
 
 %%
 
-P : program
+P : program	
   ;
 
-program	: external_declaration
+program	
+		: external_declaration
 		| program external_declaration
 		;
 
-external_declaration : header_stmt
-					 | global_stmt
-					 | main_fun
-					 ;
+external_declaration 
+		: header_stmt
+		| global_stmt
+		| main_fun
+		;
 					 
-header_stmt : '#' T_INCLUDE '<' T_IDH '>'
-            | '#' T_INCLUDE  T_IDH
-			;
+header_stmt 
+		: '#' T_INCLUDE '<' T_IDH '>'
+        | '#' T_INCLUDE  T_IDH
+		;
 
-global_stmt : declaration_statement 
-		    | fun_declr
-			| user_defined_ds
-			;
+global_stmt 
+		: declaration_statement 
+		| fun_declr
+		| user_defined_ds
+		;
 			
-main_fun : subroutine T_INT T_MAIN '(' ')' compound_stmt
-	     ;
+main_fun 
+		: subroutine T_INT T_MAIN '(' ')' compound_stmt
+	    ;
 			
-subroutine : %empty {}
-		   ;
-		   
-			
-declaration_statement : subroutine var_type list_identifier ';'
-	        		  ;
+subroutine 
+		: %empty {}
+		;
+		   	
+declaration_statement 
+		: subroutine var_type list_identifier ';'
+	    ;
 		
-list_identifier : list_identifier ',' variable 
-				| list_identifier ',' init
-				| init
-				| variable
-				;
+list_identifier 
+		: list_identifier ',' variable 
+		| list_identifier ',' init
+		| init
+		| variable
+		;
 				
-variable : T_IDENTIFIER
-		 | T_IDENTIFIER array
-		 ;
+variable 
+		: T_IDENTIFIER
+		| T_IDENTIFIER array
+		;
 		 
-array : array '[' T_INTEGER_VAL ']'
-	  | '[' T_INTEGER_VAL ']'
-	  ;
+array 
+		: array '[' T_INTEGER_VAL ']'
+		| '[' T_INTEGER_VAL ']'
+	  	;
 	  
-init : var_init
-     | array_init
-	 ;
+init 
+		: var_init
+     	| array_init
+	 	;
 	 
-var_init : T_IDENTIFIER '=' expression
-		 ;
+var_init 
+		: T_IDENTIFIER '=' expression
+		;
 		 
-array_init : T_IDENTIFIER array '=' '{' values '}'
-		   ;
+array_init 
+		: T_IDENTIFIER array '=' '{' values '}'
+		;
 		   
-values : values ',' constant
-       | constant
-	   ;
+values 
+		: values ',' constant
+       	| constant
+	   	;
 	   
-constant : T_INTEGER_VAL
-		 | T_STRING_VAL
-		 | T_CHAR_VAL
-		 | T_FLOAT_VAL
-		 ;
+constant 
+		: T_INTEGER_VAL
+		| T_STRING_VAL
+		| T_CHAR_VAL
+		| T_FLOAT_VAL
+		;
 		 
-declarator : '(' ')'
-		   | '(' params ')'
-		   ;
+declarator 
+		: '(' ')'
+		| '(' params ')'
+		;
 
-fun_declr : subroutine var_type T_IDENTIFIER declarator compound_stmt
-		  ;
+fun_declr 
+		: subroutine var_type T_IDENTIFIER declarator compound_stmt
+		;
 		  
-var_type : T_INT 
-		 | T_FLOAT
-		 | T_DOUBLE
-		 | T_CHAR
-		 | T_STRING
-		 | T_VOID
-		 ;
+var_type 
+		: T_INT 
+		| T_FLOAT
+		| T_DOUBLE
+		| T_CHAR
+		| T_STRING
+		| T_VOID
+		;
 		 
-params_list : T_INT T_IDENTIFIER 
-			| T_FLOAT T_IDENTIFIER 
-			| params_list ',' T_INT T_IDENTIFIER 
-			| params_list ',' T_FLOAT T_IDENTIFIER 
-			;
+params_list 
+		: T_INT T_IDENTIFIER 
+		| T_FLOAT T_IDENTIFIER 
+		| params_list ',' T_INT T_IDENTIFIER 
+		| params_list ',' T_FLOAT T_IDENTIFIER 
+		;
 		 
-params : params_list
-	   | T_VOID
-       ;
+params 
+		: params_list
+	  	| T_VOID
+       	;
 		 
-compound_stmt : start_paren end_paren
-			  | start_paren block_item_list end_paren 
-			  ;
+compound_stmt 
+		: start_paren end_paren
+		| start_paren block_item_list end_paren 
+		;
 			  
-start_paren : '{' {create_new_scope();}
+start_paren 
+		: '{' {create_new_scope();}
+		;
 
-end_paren : '}' {exit_scope();}
+end_paren 
+		: '}' {exit_scope();}
+		;
 			  
-block_item_list : block_item
-				| block_item_list block_item
-				;
+block_item_list 
+		: block_item
+		| block_item_list block_item
+		;
 
-block_item : declaration_statement
-		   | statement
-		   ;
-
-		   
-		   
-user_defined_ds : class
-				| structure
-				;
+block_item 
+		: declaration_statement
+		| statement
+		;
+   
+user_defined_ds 
+		: class
+		| structure
+		;
 				
-class : T_CLASS T_IDENTIFIER class_body_stmt ';'
+class 
+		: T_CLASS T_IDENTIFIER class_body_stmt ';'
+		;
 
-structure : T_STRUCT T_IDENTIFIER struct_body_stmt ';'
+structure 
+		: T_STRUCT T_IDENTIFIER struct_body_stmt ';'
+		;
 
-class_body_stmt  : start_paren end_paren
-				 | start_paren class_mems end_paren 
-				 ;
+class_body_stmt  
+		: start_paren end_paren
+		| start_paren class_mems end_paren 
+		;
 				 
-struct_body_stmt  : start_paren end_paren
-				  | start_paren struct_mems end_paren 
-				  ;
+struct_body_stmt  
+		: start_paren end_paren
+		| start_paren struct_mems end_paren 
+		;
 
-struct_mems : struct_mem
-			| struct_mems struct_mem
-			;
+struct_mems 
+		: struct_mem
+		| struct_mems struct_mem
+		;
 
-class_mems : class_mem
-		   | class_mems class_mem
-		   ;
+class_mems 
+		: class_mem
+		| class_mems class_mem
+		;
 
-struct_mem : declaration_statement
-		   | fun_declr
-		   ;
+struct_mem 
+		: declaration_statement
+		| fun_declr
+		;
 
-class_mem	: subroutine var_type class_var_declaration ';'
-			|  fun_declr
-			|  access_specifier ':'
-			;
+class_mem	
+		: subroutine var_type class_var_declaration ';'
+		|  fun_declr
+		|  access_specifier ':'
+		;
 			
-class_var_declaration : T_IDENTIFIER
-					  | class_var_declaration ',' T_IDENTIFIER
-					  ;
+class_var_declaration 
+		: T_IDENTIFIER
+		| class_var_declaration ',' T_IDENTIFIER
+		;
 
-access_specifier : T_PRIVATE
-                 | T_PUBLIC
-                 | T_PROTECTED
-				 ;
+access_specifier 
+		: T_PRIVATE
+        | T_PUBLIC
+        | T_PROTECTED
+		;
 		     
-statement : expression_stmt
-		  | compound_stmt
-  		  | iterative_statement
-  		  | selection_statement
-		  | input_output_statements
-          | return_stmt
-  		  ;
+statement 
+		: expression_stmt
+		| compound_stmt
+  		| iterative_statement
+  		| selection_statement
+		| input_output_statements
+        | return_stmt
+  		;
 		  
 expression_stmt
-    : ';' 
-    | expression ';'
-    ;
+    	: ';' 
+    	| expression ';'
+    	;
 
-selection_statement : T_IF '(' expression ')' statement
-                    | T_IF '(' expression ')' statement T_ELSE statement
-                    ;
+selection_statement 
+		: T_IF '(' { } expression ')' statement
+        | T_IF '(' expression ')' statement T_ELSE statement
+        ;
 					
-iterative_statement : for_loop
-					| while_loop
-  					;
+iterative_statement 
+		: for_loop
+		| while_loop
+  		;
 
-for_loop : {} T_FOR '(' {} for_assgn_stmt ';' {} expression ';' {} unary_exprn ')' {} statement
-  	   	 ;
+for_loop 
+		: {} T_FOR '(' {} for_assgn_stmt ';' {} expression ';' {} unary_exprn ')' {} statement
+  	   	;
 
-for_assgn_stmt : var_type for_decl_stmt
-			   | assignment_expression
-			   ;
+for_assgn_stmt 
+		: var_type for_decl_stmt
+		| assignment_expression
+		;
 
-for_decl_stmt : T_IDENTIFIER '=' expression 
-			  | for_decl_stmt ',' T_IDENTIFIER '=' expression
-			  ;
+for_decl_stmt 
+		: T_IDENTIFIER '=' expression 
+		| for_decl_stmt ',' T_IDENTIFIER '=' expression
+		;
 
-while_loop : T_WHILE '(' expression ')' statement
-  		   ;
+while_loop 
+		: T_WHILE '(' expression ')' statement
+  		;
 		   
-return_stmt : T_RETURN ';'
-		    | T_RETURN expression ';'
-			;
+return_stmt 
+		: T_RETURN ';'
+		| T_RETURN expression ';'
+		;
 			
-expression : assignment_expression
-		   | simple_expression
-		   ;
+expression 
+		: assignment_expression
+		| simple_expression
+		;
 		   
-assignment_expression : T_IDENTIFIER '=' expression
-	          		  | unary_exprn
-					  ;
+assignment_expression 
+		: T_IDENTIFIER '=' expression
+	    | unary_exprn
+		;
 					  
-unary_exprn : T_ADDADD T_IDENTIFIER
-			| T_MINMIN T_IDENTIFIER
-            | postfix_expression
-            | T_IDENTIFIER uop_shorthd expression
-			;
+unary_exprn 
+		: T_ADDADD T_IDENTIFIER
+		| T_MINMIN T_IDENTIFIER
+        | postfix_expression
+        | T_IDENTIFIER uop_shorthd expression
+		;
 			
-postfix_expression : T_IDENTIFIER T_ADDADD
-				   | T_IDENTIFIER T_MINMIN
-				   ;
+postfix_expression 
+		: T_IDENTIFIER T_ADDADD
+		| T_IDENTIFIER T_MINMIN
+		;
 
-uop_shorthd  : T_ADDEQ
-             | T_MINEQ
-             | T_MULEQ
-             | T_DIVEQ
-			 ;
+uop_shorthd  
+		: T_ADDEQ
+        | T_MINEQ
+        | T_MULEQ
+        | T_DIVEQ
+		;
 			 
-simple_expression : additive_expression
-				  | additive_expression relop additive_expression
-				  | additive_expression logop additive_expression
-				  | additive_expression bitop additive_expression
-				  ;
+simple_expression 
+		: additive_expression
+		| additive_expression relop additive_expression
+		| additive_expression logop additive_expression
+		| additive_expression bitop additive_expression
+		;
 				  
-bitop : T_OR
-   	  | T_AND
-	  | T_XOR
-	  | T_LRSHIFT
-	  | T_LLSHIFT
-	  ;
+bitop 
+		: T_OR
+		| T_AND
+		| T_XOR
+	  	| T_LRSHIFT
+	  	| T_LLSHIFT
+	  	;
 				  
-relop : '<'
-      | '>'
-	  | T_LTEQ
-	  | T_GTEQ
-	  | T_NEQEQ
-	  | T_EQEQ
-	  ;
+relop 
+		: '<'
+      	| '>'
+	  	| T_LTEQ
+	  	| T_GTEQ
+	  	| T_NEQEQ
+	  	| T_EQEQ
+	  	;
 
-logop : T_OROR
-	  | T_ANDAND
-	  ;
+logop 
+		: T_OROR
+	  	| T_ANDAND
+	  	;
 	  
-additive_expression : term
-					| additive_expression '+' term
-					| additive_expression '-' term
-					| '+' additive_expression %prec '*'
-					| '-' additive_expression %prec '*'
-					;
+additive_expression 
+		: term
+		| additive_expression '+' term
+		| additive_expression '-' term
+		| '+' additive_expression %prec '*'
+		| '-' additive_expression %prec '*'
+		;
 
-term : factor
-	 | term '*' factor
-     | term '/' factor
-  	 ;
+term 
+		: factor
+	 	| term '*' factor
+     	| term '/' factor
+  	 	;
 
-factor : '(' expression ')'
-	   | T_IDENTIFIER
-	   | call
-	   | T_INTEGER_VAL
-	   | T_FLOAT_VAL
-	   | T_STRING_VAL
-	   | T_CHAR_VAL
-	   ;
+factor 
+		: '(' expression ')'
+	   	| T_IDENTIFIER
+	   	| call
+	   	| T_INTEGER_VAL
+	   	| T_FLOAT_VAL
+	   	| T_STRING_VAL
+	   	| T_CHAR_VAL
+	   	;
 
-call : T_IDENTIFIER '(' ')'
-	 | T_IDENTIFIER '(' args ')'
-	 ;
+call 	
+		: T_IDENTIFIER '(' ')'
+	 	| T_IDENTIFIER '(' args ')'
+	 	;
 
-args : expression
-	 | expression ',' args
-	 ;
+args 	
+		: expression
+	 	| expression ',' args
+	 	;
 
-input_output_statements : T_COUT T_LLSHIFT expression ';'
-						| T_CIN T_LRSHIFT T_IDENTIFIER ';'
-						;
+input_output_statements 
+		: T_COUT T_LLSHIFT expression ';'
+		| T_CIN T_LRSHIFT T_IDENTIFIER ';'
+		;
 
 %%
 
@@ -309,10 +370,7 @@ void yyerror(const char *str)
 	printf("line no :%d  %s near %s\n", yylineno, str, yytext );
 }
 
-/*int yywrap()
-{
-	return 1;
-}*/
+/* if you need yywrap, declare it here */
 
 extern FILE *yyin;
 
