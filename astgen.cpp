@@ -15,7 +15,7 @@ struct ASTNode{
 	std::vector<ASTNode *> children;
 };
 
-ASTNode *newNode(std::string ASTNode_value)
+ASTNode *newASTNode(std::string ASTNode_value)
 {
 	ASTNode *temp = new ASTNode;
 	temp->symbol = ASTNode_value;
@@ -34,7 +34,7 @@ void LevelOrderTraversalAST(ASTNode *root)
 		while(n>0){
 			ASTNode *p = q.front();
 			q.pop();
-
+			std::cout << p->symbol << std::endl;
 			for(int i=0; i<int(p->children.size()); i++){
 				q.push(p->children[i]);
 			}
@@ -46,5 +46,7 @@ void LevelOrderTraversalAST(ASTNode *root)
 
 void push_into_AST(struct ASTNode *root, std::string ASTNode_value)
 {
-	root->children.push_back(newNode(ASTNode_value));
+	(root->children).push_back(newASTNode(ASTNode_value));
 }
+
+ASTNode *ast_root;
