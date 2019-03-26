@@ -234,7 +234,7 @@ expression_stmt
     	;
 
 selection_statement 
-		: T_IF '(' { } expression ')' statement
+		: T_IF '(' expression ')' statement
         | T_IF '(' expression ')' statement T_ELSE statement
         ;
 					
