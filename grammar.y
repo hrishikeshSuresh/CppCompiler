@@ -20,7 +20,7 @@
 	// declare yywarp here, if you want to use it
 	extern int lineno;
 	int list_declr_flag = 0;
-
+	ASTNode *ast_root;
 %}
 
 %union{
@@ -35,13 +35,30 @@
 %token T_GTEQ T_NEQEQ T_EQEQ T_OROR T_ANDAND T_OR T_AND T_XOR T_LRSHIFT T_LLSHIFT
 %token T_WHILE T_MAIN T_STRING T_STRUCT T_CLASS T_PRIVATE T_PUBLIC T_PROTECTED T_ADDADD T_MINMIN
 %token T_STRING_VAL T_CHAR_VAL T_COUT T_CIN
+
+%type <str_val> T_INT
+%type <str_val> T_VOID
+%type <str_val> T_FLOAT
+%type <str_val> T_CHAR
+%type <str_val> T_STRING
+%type <str_val> T_DOUBLE
+%type <str_val>	T_IDENTIFIER
+%type <str_val> var_type
+
+%type <int_val> expression
+%type <int_val> simple_expression
+%type <int_val> additive_expression
+%type <int_val> term
+%type <int_val>	factor
+%type <int_val> T_INTEGER_VAL
+
 %left '(' ')' '+' '*' '-' '/'
 
 %start P	
 
 %%
 
-P : program	
+P : program			{ ast_root = newASTNode("P"); }
   ;
 
 program	
@@ -394,7 +411,11 @@ int main(int argc, char *argv[])
     }
 
     if(yyparse() == 0) { printf("Parsing successful!\n");}
-
+	
+	// symbol table traversal
 	LevelOrderTraversal(root);
+
+	// abstract syntax tree traversal
+	LevelOrderTraversalAST(ast_root);
     return 0;
 }
