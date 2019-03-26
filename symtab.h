@@ -12,8 +12,8 @@
 							 Adarsha Nayak
 							 Jai Agarwal
 				  
-		DEVELOPER COMMENTS : /*  	for describing code
-							 //    	for removing code
+		DEVELOPER COMMENTS : \/\*  	for describing code
+							 \/\/    	for removing code
 							 vn		 v - version, n - version number
 
 */

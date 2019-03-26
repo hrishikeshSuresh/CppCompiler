@@ -1,16 +1,16 @@
-#include<bits/stdc++.h>
-#include "symtab.h"
-
 /*
 		AUTHORS 	: 		 Hrishikesh S.
 							 Adarsha Nayak
 							 Jai Agarwal
 				  
-		DEVELOPER COMMENTS : /*  	for describing code
-							 //    	for removing code
-							 vn		 v - version, n - version number
+		DEVELOPER COMMENTS : \/\*  	for describing code
+							 \/\/   for removing code
+							 vn		v - version, n - version number
 
 */
+
+#include<bits/stdc++.h>
+#include "symtab.h"
 
 int curr_scope = 0;
 
@@ -100,7 +100,7 @@ void LevelOrderTraversal(Node * root){
 				//std::cout<<"Not Present"<<std::endl;
 			//}
             /* Enqueue all children of the dequeued item */ 
-            for (int i=0; i<p->child.size(); i++) 
+            for (int i=0; i<int(p->child.size()); i++) 
                 q.push(p->child[i]); 
             n--; 
         }
@@ -140,7 +140,7 @@ void insert(char *name, int len, int type, int lineno){
 			/* same scope - multiple declaration error! */
 			auto itr = (current_scope_node->symbolTable).find(name);
 			while(strcmp((itr->first).c_str(),name)==0){
-				if((itr->second).scope_id == curr_scope){
+				if(int((itr->second).scope_id) == curr_scope){
 					printf("A multiple declaration of variable %s at line %d\n", name, lineno);
 					//exit(1);
 				}

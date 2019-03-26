@@ -1,5 +1,14 @@
 %{
+	/*
+		AUTHORS 	: 		 Hrishikesh S.
+							 Adarsha Nayak
+							 Jai Agarwal
+				  
+		DEVELOPER COMMENTS : \/\*  for describing code
+							 \/\/  for removing code
+							 vn	   v - version, n - version number
 
+	*/
 	#include<bits/stdc++.h>
 	#include "symtab.cpp"
 	#include "astgen.cpp"
