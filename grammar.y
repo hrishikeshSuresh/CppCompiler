@@ -21,6 +21,7 @@
 	extern int lineno;
 	//ASTNode *ast_root;
 	int list_declr_flag = 0;
+	string a = "";
 %}
 
 %union{
@@ -139,12 +140,12 @@ main_fun
 		: subroutine T_INT T_MAIN '(' ')' compound_stmt
 					{
 						// AST code
-						push_into_AST("subroutine");
+						move_to_next_level("subroutine");
 						push_into_AST("int");
 						push_into_AST("main");
 						push_into_AST("(");
 						push_into_AST(")");
-						push_into_AST("compound_stmt");
+						move_to_next_level("compound_stmt");
 					}
 	    ;
 			
@@ -156,12 +157,9 @@ declaration_statement
 		: subroutine var_type list_identifier ';'
 					{
 						// AST code
-						push_into_AST("subroutine");
-						push_into_AST("int");
-						push_into_AST("main");
-						push_into_AST("(");
-						push_into_AST(")");
-						push_into_AST("compound_stmt");
+						move_to_next_level("subroutine");
+						move_to_next_level("var_type");
+						push_into_AST("identifier");
 					}
 	    ;
 		
@@ -169,26 +167,26 @@ list_identifier
 		: list_identifier ',' variable 
 					{
 						// AST code
-						push_into_AST("list_identifier");
+						move_to_next_level("list_identifier");
 						push_into_AST(",");
-						push_into_AST("variable");;
+						move_to_next_level("variable");;
 					}
 		| list_identifier ',' init
 					{
 						// AST code
-						push_into_AST("list_identifier");
+						move_to_next_level("list_identifier");
 						push_into_AST(",");
-						push_into_AST("init");;
+						move_to_next_level("init");;
 					}
 		| init
 					{
 						// AST code
-						push_into_AST("init");
+						move_to_next_level("init");
 					}
 		| variable
 					{
 						// AST code
-						push_into_AST("variable");
+						move_to_next_level("variable");
 					}
 		;
 				
@@ -202,7 +200,7 @@ variable
 					{
 						// AST code
 						push_into_AST("T_IDENTIFIER");
-						push_into_AST("array");
+						move_to_next_level("array");
 					}
 		;
 		 
@@ -210,7 +208,7 @@ array
 		: array '[' T_INTEGER_VAL ']'
 					{
 						// AST code
-						push_into_AST("array");
+						move_to_next_level("array");
 						push_into_AST("[");
 						push_into_AST("T_INTEGER_VAL");
 						push_into_AST("]");
@@ -243,7 +241,7 @@ var_init
 						// AST code
 						push_into_AST("T_IDENTIFIER");
 						push_into_AST("=");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 					}
 		;
 		 
@@ -252,10 +250,10 @@ array_init
 					{
 						// AST code
 						push_into_AST("T_IDENTIFIER");
-						push_into_AST("array");
+						move_to_next_level("array");
 						push_into_AST("=");
 						push_into_AST("{");
-						push_into_AST("values");
+						move_to_next_level("values");
 						push_into_AST("}");
 					}
 		;
@@ -264,14 +262,14 @@ values
 		: values ',' constant
 					{
 						// AST code
-						push_into_AST("values");
+						move_to_next_level("values");
 						push_into_AST(",");
-						push_into_AST("constant");
+						move_to_next_level("constant");
 					}
        	| constant
 					{
 						// AST code
-						push_into_AST("constant");
+						move_to_next_level("constant");
 					}
 	   	;
 	   
@@ -309,7 +307,7 @@ declarator
 					{
 						// AST code
 						push_into_AST("(");
-						push_into_AST("params");
+						move_to_next_level("params");
 						push_into_AST(")");
 					}
 		;
@@ -318,10 +316,10 @@ fun_declr
 		: subroutine var_type T_IDENTIFIER declarator compound_stmt
 					{
 						// AST code
-						push_into_AST("sub_routine");
-						push_into_AST("var_type");
+						move_to_next_level("sub_routine");
+						move_to_next_level("var_type");
 						push_into_AST("T_IDENTIFIER");
-						push_into_AST("declarator");
+						move_to_next_level("declarator");
 						push_into_AST(")");
 					}
 		;
@@ -375,7 +373,7 @@ params_list
 		| params_list ',' T_INT T_IDENTIFIER 
 					{
 						// AST code
-						push_into_AST("params_list");
+						move_to_next_level("params_list");
 						push_into_AST(",");
 						push_into_AST("T_INT");
 						push_into_AST("T_IDENTIFIER");
@@ -383,7 +381,7 @@ params_list
 		| params_list ',' T_FLOAT T_IDENTIFIER
 					{
 						// AST code
-						push_into_AST("params_list");
+						move_to_next_level("params_list");
 						push_into_AST(",");
 						push_into_AST("T_FLOAT");
 						push_into_AST("T_IDENTIFIER");
@@ -394,7 +392,7 @@ params
 		: params_list
 					{
 						// AST code
-						push_into_AST("params_list");
+						move_to_next_level("params_list");
 					}
 	  	| T_VOID
 					{
@@ -407,15 +405,15 @@ compound_stmt
 		: start_paren end_paren
 					{
 						// AST code
-						push_into_AST("start_paren");
-						push_into_AST("end_paren");
+						move_to_next_level("start_paren");
+						move_to_next_level("end_paren");
 					}
 		| start_paren block_item_list end_paren 
 					{
 						// AST code
-						push_into_AST("start_paren");
-						push_into_AST("block_item_list");
-						push_into_AST("end_paren");
+						move_to_next_level("start_paren");
+						move_to_next_level("block_item_list");
+						move_to_next_level("end_paren");
 					}
 		;
 			  
@@ -439,13 +437,13 @@ block_item_list
 		: block_item
 					{
 						// AST code
-						push_into_AST("block_item");
+						move_to_next_level("block_item");
 					}
 		| block_item_list block_item
 					{
 						// AST code
-						push_into_AST("block_item_list");
-						push_into_AST("block_item");
+						move_to_next_level("block_item_list");
+						move_to_next_level("block_item");
 					}
 		;
 
@@ -453,12 +451,12 @@ block_item
 		: declaration_statement
 					{
 						// AST code
-						push_into_AST("declaration_statement");
+						move_to_next_level("declaration_statement");
 					}
 		| statement
 					{
 						// AST code
-						push_into_AST("statement");
+						move_to_next_level("statement");
 					}
 		;
    
@@ -466,12 +464,12 @@ user_defined_ds
 		: class
 					{
 						// AST code
-						push_into_AST("class");
+						move_to_next_level("class");
 					}
 		| structure
 					{
 						// AST code
-						push_into_AST("structure");
+						move_to_next_level("structure");
 					}
 		;
 				
@@ -481,7 +479,7 @@ class
 						// AST code
 						push_into_AST("T_CLASS");
 						push_into_AST("T_IDENTIFIER");
-						push_into_AST("class_body");
+						move_to_next_level("class_body");
 						push_into_AST(";");
 					}
 		;
@@ -492,8 +490,8 @@ structure
 						// AST code
 						push_into_AST("T_STRUCT");
 						push_into_AST("T_IDENTIFIER");
-						push_into_AST("struct_body");
-						push_into_AST("stmt");
+						move_to_next_level("struct_body");
+						move_to_next_level("stmt");
 						push_into_AST(";");
 					}
 		;
@@ -502,15 +500,15 @@ class_body_stmt
 		: start_paren end_paren
 					{
 						// AST code
-						push_into_AST("start_paren");
-						push_into_AST("end_paren");
+						move_to_next_level("start_paren");
+						move_to_next_level("end_paren");
 					}
 		| start_paren class_mems end_paren
 					{
 						// AST code
-						push_into_AST("start_paren");
-						push_into_AST("class_mems");
-						push_into_AST("end_paren");
+						move_to_next_level("start_paren");
+						move_to_next_level("class_mems");
+						move_to_next_level("end_paren");
 					} 
 		;
 				 
@@ -518,15 +516,15 @@ struct_body_stmt
 		: start_paren end_paren
 					{
 						// AST code
-						push_into_AST("start_paren");
-						push_into_AST("end_paren");
+						move_to_next_level("start_paren");
+						move_to_next_level("end_paren");
 					}
 		| start_paren struct_mems end_paren 
 					{
 						// AST code
-						push_into_AST("start_paren");
-						push_into_AST("struct_mems");
-						push_into_AST("end_paren");
+						move_to_next_level("start_paren");
+						move_to_next_level("struct_mems");
+						move_to_next_level("end_paren");
 					} 
 		;
 
@@ -534,13 +532,13 @@ struct_mems
 		: struct_mem
 					{
 						// AST code
-						push_into_AST("struct_mem");
+						move_to_next_level("struct_mem");
 					}
 		| struct_mems struct_mem
 					{
 						// AST code
-						push_into_AST("struct_mems");
-						push_into_AST("struct_mem");
+						move_to_next_level("struct_mems");
+						move_to_next_level("struct_mem");
 					}
 		;
 
@@ -548,13 +546,13 @@ class_mems
 		: class_mem
 					{
 						// AST code
-						push_into_AST("class_mem");
+						move_to_next_level("class_mem");
 					}
 		| class_mems class_mem
 					{
 						// AST code
-						push_into_AST("class_mems");
-						push_into_AST("class_mem");
+						move_to_next_level("class_mems");
+						move_to_next_level("class_mem");
 					}
 		;
 
@@ -562,12 +560,12 @@ struct_mem
 		: declaration_statement
 					{
 						// AST code
-						push_into_AST("declaration_statement");
+						move_to_next_level("declaration_statement");
 					}
 		| fun_declr
 					{
 						// AST code
-						push_into_AST("fun_declr");
+						move_to_next_level("fun_declr");
 					}
 		;
 
@@ -575,20 +573,20 @@ class_mem
 		: subroutine var_type class_var_declaration ';'
 					{
 						// AST code
-						push_into_AST("subroutine");
-						push_into_AST("var_type");
-						push_into_AST("class_var_declaration");
-						push_into_AST(";");
+						move_to_next_level("subroutine");
+						move_to_next_level("var_type");
+						move_to_next_level("class_var_declaration");
+						move_to_next_level(";");
 					}
 		|  fun_declr
 					{
 						// AST code
-						push_into_AST("fun_declr");
+						move_to_next_level("fun_declr");
 					}
 		|  access_specifier ':'
 					{
 						// AST code
-						push_into_AST("access_specifier");
+						move_to_next_level("access_specifier");
 						push_into_AST(":");
 					}
 		;
@@ -602,7 +600,7 @@ class_var_declaration
 		| class_var_declaration ',' T_IDENTIFIER
 					{
 						// AST code
-						push_into_AST("class_var_declaration");
+						move_to_next_level("class_var_declaration");
 						push_into_AST(";");
 						push_into_AST("T_IDENTIFIER");
 					}
@@ -630,32 +628,32 @@ statement
 		: expression_stmt
 					{
 						// AST code
-						push_into_AST("expression_stmt");
+						move_to_next_level("expression_stmt");
 					}
 		| compound_stmt
 					{
 						// AST code
-						push_into_AST("compound_stmt");
+						move_to_next_level("compound_stmt");
 					}
   		| iterative_statement
 					{
 						// AST code
-						push_into_AST("iterative_statement");
+						move_to_next_level("iterative_statement");
 					}
   		| selection_statement
 					{
 						// AST code
-						push_into_AST("selection_stmt");
+						move_to_next_level("selection_stmt");
 					}
 		| input_output_statements
 					{
 						// AST code
-						push_into_AST("input_output_statements");
+						move_to_next_level("input_output_statements");
 					}
         | return_stmt
 					{
 						// AST code
-						push_into_AST("return_stmt");
+						move_to_next_level("return_stmt");
 					}
   		;
 		  
@@ -668,7 +666,7 @@ expression_stmt
     	| expression ';'
 					{
 						// AST code
-						push_into_AST("expression");
+						move_to_next_level("expression");
 						push_into_AST(";");
 					}
     	;
@@ -679,19 +677,19 @@ selection_statement
 						// AST code
 						push_into_AST("T_IF");
 						push_into_AST("(");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 						push_into_AST(")");
-						push_into_AST("statement");
+						move_to_next_level("statement");
 					}
         | T_IF '(' expression ')' statement T_ELSE statement
 					{
 						// AST code
 						push_into_AST("T_IF");
 						push_into_AST("(");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 						push_into_AST(")");
 						push_into_AST("T_ELSE");
-						push_into_AST("statement");
+						move_to_next_level("statement");
 					}
         ;
 					
@@ -699,12 +697,12 @@ iterative_statement
 		: for_loop
 					{
 						// AST code
-						push_into_AST("for_loop");
+						move_to_next_level("for_loop");
 					}
 		| while_loop
 					{
 						// AST code
-						push_into_AST("while_loop");
+						move_to_next_level("while_loop");
 					}
   		;
 
@@ -714,13 +712,13 @@ for_loop
 						// AST code
 						push_into_AST("T_FOR");
 						push_into_AST("(");
-						push_into_AST("for_assgn_stmt");
+						move_to_next_level("for_assgn_stmt");
 						push_into_AST(";");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 						push_into_AST(";");
-						push_into_AST("unary_exprn");
+						move_to_next_level("unary_exprn");
 						push_into_AST(")");
-						push_into_AST("statement");
+						move_to_next_level("statement");
 					}
   	   	;
 
@@ -728,13 +726,13 @@ for_assgn_stmt
 		: var_type for_decl_stmt
 					{
 						// AST code
-						push_into_AST("var_type");
-						push_into_AST("for_decl_stmt");
+						move_to_next_level("var_type");
+						move_to_next_level("for_decl_stmt");
 					}
 		| assignment_expression
 					{
 						// AST code
-						push_into_AST("assignment_expression");
+						move_to_next_level("assignment_expression");
 					}
 		;
 
@@ -744,16 +742,16 @@ for_decl_stmt
 						// AST code
 						push_into_AST("T_IDENTIFIER");
 						push_into_AST("=");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 					} 
 		| for_decl_stmt ',' T_IDENTIFIER '=' expression
 					{
 						// AST code
-						push_into_AST("for_decl_stmt");
+						move_to_next_level("for_decl_stmt");
 						push_into_AST(",");
 						push_into_AST("T_IDENTIFIER");
 						push_into_AST("=");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 					}
 		;
 
@@ -763,9 +761,9 @@ while_loop
 						// AST code
 						push_into_AST("T_WHILE");
 						push_into_AST("(");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 						push_into_AST(")");
-						push_into_AST("statement");
+						move_to_next_level("statement");
 					} 
   		;
 		   
@@ -780,7 +778,7 @@ return_stmt
 					{
 						// AST code
 						push_into_AST("T_RETURN");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 						push_into_AST(";");
 					}
 		;
@@ -789,12 +787,12 @@ expression
 		: assignment_expression
 					{
 						// AST code
-						push_into_AST("assignment_expression");
+						move_to_next_level("assignment_expression");
 					}
 		| simple_expression
 					{
 						// AST code
-						push_into_AST("simple_expression");
+						move_to_next_level("simple_expression");
 					}
 		;
 		   
@@ -804,12 +802,12 @@ assignment_expression
 						// AST code
 						push_into_AST("T_IDENTIFIER");
 						push_into_AST("=");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 					}
 	    | unary_exprn
 					{
 						// AST code
-						push_into_AST("unary_exprn");
+						move_to_next_level("unary_exprn");
 					}
 		;
 					  
@@ -829,14 +827,14 @@ unary_exprn
         | postfix_expression
 					{
 						// AST code
-						push_into_AST("postfix_expression");
+						move_to_next_level("postfix_expression");
 					}
         | T_IDENTIFIER uop_shorthd expression
 					{
 						// AST code
 						push_into_AST("T_IDENTIFIER");
-						push_into_AST("uop_shorthd");
-						push_into_AST("expression");
+						move_to_next_level("uop_shorthd");
+						move_to_next_level("expression");
 					}
 		;
 			
@@ -882,28 +880,28 @@ simple_expression
 		: additive_expression
 					{
 						// AST code
-						push_into_AST("additive_expression");
+						move_to_next_level("additive_expression");
 					}
 		| additive_expression relop additive_expression
 					{
 						// AST code
-						push_into_AST("additive_expression");
-						push_into_AST("relop");
-						push_into_AST("additive_expression");
+						move_to_next_level("additive_expression");
+						move_to_next_level("relop");
+						move_to_next_level("additive_expression");
 					}
 		| additive_expression logop additive_expression
 					{
 						// AST code
-						push_into_AST("additive_expression");
-						push_into_AST("logop");
-						push_into_AST("additive_expression");
+						move_to_next_level("additive_expression");
+						move_to_next_level("logop");
+						move_to_next_level("additive_expression");
 					}
 		| additive_expression bitop additive_expression
 					{
 						// AST code
-						push_into_AST("additive_expression");
-						push_into_AST("bitop");
-						push_into_AST("additive_expression");
+						move_to_next_level("additive_expression");
+						move_to_next_level("bitop");
+						move_to_next_level("additive_expression");
 					}
 		;
 				  
@@ -985,34 +983,34 @@ additive_expression
 		: term
 					{
 						// AST code
-						push_into_AST("term");
+						move_to_next_level("term");
 					}
 		| additive_expression '+' term
 					{
 						// AST code
-						push_into_AST("additive_expression");
+						move_to_next_level("additive_expression");
 						push_into_AST("+");
-						push_into_AST("term");
+						move_to_next_level("term");
 					}
 		| additive_expression '-' term
 					{
 						// AST code
-						push_into_AST("additive_expression");
+						move_to_next_level("additive_expression");
 						push_into_AST("-");
-						push_into_AST("term");
+						move_to_next_level("term");
 					}
 		| '+' additive_expression %prec '*'
 					{
 						// AST code
 						push_into_AST("+");
-						push_into_AST("additive_expression");
+						move_to_next_level("additive_expression");
 						push_into_AST("*");
 					}
 		| '-' additive_expression %prec '*'
 					{
 						// AST code
 						push_into_AST("-");
-						push_into_AST("additive_expression");
+						move_to_next_level("additive_expression");
 						push_into_AST("*");
 					}
 		;
@@ -1021,21 +1019,21 @@ term
 		: factor
 					{
 						// AST code
-						push_into_AST("factor");
+						move_to_next_level("factor");
 					}
 	 	| term '*' factor
 					{
 						// AST code
-						push_into_AST("term");
+						move_to_next_level("term");
 						push_into_AST("*");
-						push_into_AST("factor");
+						move_to_next_level("factor");
 					}
      	| term '/' factor
 					{
 						// AST code
-						push_into_AST("term");
+						move_to_next_level("term");
 						push_into_AST("/");
-						push_into_AST("factor");
+						move_to_next_level("factor");
 					}
   	 	;
 
@@ -1044,7 +1042,7 @@ factor
 					{
 						// AST code
 						push_into_AST("(");
-						push_into_AST("expression");
+						move_to_next_level("expression");
 						push_into_AST(")");
 					}
 	   	| T_IDENTIFIER
@@ -1055,7 +1053,7 @@ factor
 	   	| call
 					{
 						// AST code
-						push_into_AST("call");
+						move_to_next_level("call");
 					}
 	   	| T_INTEGER_VAL
 					{
@@ -1092,7 +1090,7 @@ call
 						// AST code
 						push_into_AST("T_IDENTIFIER");
 						push_into_AST("(");
-						push_into_AST("args");
+						move_to_next_level("args");
 						push_into_AST(")");
 					}
 	 	;
@@ -1101,14 +1099,14 @@ args
 		: expression
 					{
 						// AST code
-						push_into_AST("expression");
+						move_to_next_level("expression");
 					}
 	 	| expression ',' args
 					{
 						// AST code
-						push_into_AST("expression");
+						move_to_next_level("expression");
 						push_into_AST(",");
-						push_into_AST("args");
+						move_to_next_level("args");
 					}
 	 	;
 
@@ -1118,7 +1116,7 @@ input_output_statements
 						// AST code
 						push_into_AST("T_COUT");
 						push_into_AST("T_LLSHIFT");
-						push_into_AST("args");
+						move_to_next_level("expression");
 					}
 		| T_CIN T_LRSHIFT T_IDENTIFIER ';'
 					{

@@ -18,7 +18,6 @@
 	void yyerror(const char *s);
 	
 	using namespace std;
-	
 	int yylex();
 	unsigned int lineno = 0;
 	//int yylineno = 1;
@@ -106,7 +105,8 @@ CODE_CHAR		[\+\-\*\/#\",;<>(){}=\[\]:]
 \n						{ lineno++; }
 {ID}					{ cout << yytext << " identifier" << endl;
 						  yylval.str_val = yytext;
-						  insert(yytext, strlen(yytext), UNDEF, yylineno);
+						  insert(yytext, strlen(yytext), UNDEF, yylineno);	
+						  string s(yytext);
 						  return T_IDENTIFIER; }
 \+\+					{ return T_ADDADD; }
 \-\-					{ return T_MINMIN; }
