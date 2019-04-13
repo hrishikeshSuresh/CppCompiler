@@ -148,8 +148,11 @@ declaration_statement
 						print_stack_elements();
 						std::string op = "DECLR_STAT";
 						// if input is int a = 10;
-						if(declare_and_assign_flag == 1){
+						if(declare_and_assign_flag == 1 && if_cond_flag != 1){
 							declare_and_assign_branch();
+						}
+						else if(declare_and_assign_flag == 1 && if_cond_flag != 1){
+							declare_assign_node_creation();				
 						}
 						// if input is int a;
 						else{

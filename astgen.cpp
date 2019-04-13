@@ -258,6 +258,7 @@ void IF_node_create_branch(){
 
 void declare_and_assign_branch(){
 	std::string op = "DECLR_STAT";
+	std::cout << "DECLR_AND_ASSIGN BRANCH" << std::endl;
 	// pop int, a, value
 	// so there are three pops
 	ast_node *first_child = S_ast.front();
@@ -266,7 +267,8 @@ void declare_and_assign_branch(){
 	S_ast.pop_front();
 	ast_node *third_child = S_ast.front();
 	S_ast.pop_front();
-	// create NODE with value 
+	// create NODE with value
+	std::cout << "LEAFS : " <<first_child->symbol << " " << second_child->symbol << " " << third_child->symbol << std::endl; 
 	ast_node *temp_node = new ast_node;
 	temp_node->symbol = op;
 	temp_node->children.push_back(first_child);
@@ -274,4 +276,26 @@ void declare_and_assign_branch(){
 	temp_node->children.push_back(third_child);
 	syn_root->children.push_back(temp_node);
 	std::cout << "AST : node created at " << op << std::endl;
+}
+
+void declare_assign_node_creation(){
+	std::string op = "DECLR_STAT";
+	std::cout << "DECLR_AND_ASSIGN BRANCH" << std::endl;
+	// pop int, a, value
+	// so there are three pops
+	ast_node *first_child = S_ast.front();
+	S_ast.pop_front();
+	ast_node *second_child = S_ast.front();
+	S_ast.pop_front();
+	ast_node *third_child = S_ast.front();
+	S_ast.pop_front();
+	// create NODE with value
+	std::cout << first_child->symbol << " " << second_child->symbol << " " << third_child->symbol << std::endl; 
+	ast_node *temp_node = new ast_node;
+	temp_node->symbol = op;
+	temp_node->children.push_back(first_child);
+	temp_node->children.push_back(second_child);
+	temp_node->children.push_back(third_child);
+	S_ast.push_front(temp_node);
+	std::cout << "DECLR_AND_ASSIGN NODE created" << std::endl;
 }
