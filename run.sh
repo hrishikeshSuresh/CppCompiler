@@ -26,7 +26,7 @@ lex scanner.l
 echo -e "\e[4m"
 echo -e "${WHITE}			Compiling all files....${WHITE}"
 tput sgr0
-g++ -std=c++14 -Wall -Wcomment lex.yy.c y.tab.c -ll -ly
+g++ -std=c++14 -Wall lex.yy.c y.tab.c -ll -ly
 echo -e "${CYAN}		Now run ./a.out with your input file as an argument${CYAN}"
 tput sgr0
 #./a.out input.cpp > output.txt
