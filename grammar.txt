@@ -1,0 +1,240 @@
+Tools
+____________________________________________
+
+Scanner Tool 		FLex
+Parser Tool		Generator	YACC/Bison
+____________________________________________
+
+Symbol Table Implementation
+____________________________________________
+
+Using a hash table implementation, with
+chaining to handle collisions.
+Chaining done using linked lists.
+Each entry into the hash table has token name,
+token type, token value ,current scope binding
+Scoping is done by following a name convention
+where, a block with scope_id A, has sub_blocks
+with scope_id A1.
+
+____________________________________________
+
+
+Grammar :
+				Language : C++
+Reference
+---------------------------------------------
+Symbol			Description
+---------------------------------------------
+p			Program
+ret_type 		Return type
+s			Statement (general)
+dec_stat		Declaration statement
+assign_exprn	Assignment expression
+unary_exprn	Unary expression
+cond			Condition
+exprn			Expression
+num			Number(value) (terminal)
+sel_stmt		Selection statement
+id			ID of the variable (terminal)
+class_id		ID of the class name (terminal)
+func_id		ID of the function name (terminal)
+log_exprn		Logical expression
+rel_exprn		Relational expression
+logop			Logical operator
+relop			Relational operator
+uop			Unary operator
+bitop			Bit operations
+LT			Less than (terminal)
+GT			Greater than (terminal)
+LTEQ			Less than or equal (terminal)
+GTEQ			Greater than or equal (terminal)
+NEQEQ			Not equal to (terminal)
+EQ			Equal to  (terminal)
+---------------------------------------------
+
+p : header_stmt global_stmt p
+  | global_stmt start
+  | start
+  | /*EMPTY*/
+  ;
+
+header_stmt : #include<id.h> header_stmt
+		 | #include "id.h" header_stmt
+		 | #define id exprn header_stmt
+		 | #define func_id(args) (exprn) header_stmt
+		 | /*EMPTY*/
+		 ;
+
+global_stmt : struct-handle global_stmt
+		 | dec_stat; global_stmt; s
+		 | typedef type id; global_stmt
+		 | func_declr; global_stmt
+		 | class-handle gloabal_stmt
+		 | /*EMPTY*/
+		 ;
+
+struct-handle : struct struct_id {struct_mem; func_def}
+		   | typedef struct struct_id {struct_mem; func_def}id
+		   ;
+
+struct_mem : dec_stat,struct_mem
+	      | /*EMPTY*/
+	      ;
+
+func_dclr : type func_id(args)
+
+func_def : type func_id(args){s} func_def
+         | /*EMPTY*/
+         ;
+
+start : ret_type main(){s}
+	 ;
+
+ret_type : void
+	    | int
+	    ;
+
+s : dec_stat assign_exprn; s
+  | assign_exprn; s
+  | unary_exprn; s
+  | iterative-stmts s
+  | return exprn
+  | sel_stmt; s
+  | func_def s
+  | break
+  | continue
+  | goto_label
+  | class-handle s
+  | struct-handle s
+  | /*EMPTY*/
+  ;
+
+class-handle : class class_id { class_mem };
+		  ;
+
+class_mem : dec_stat
+	    | access_specifier:
+	    | type func_id(args){s}
+	    | class_mem
+	    | /*EMPTY*/
+	    ;
+
+iterative-stmts : for_loop | while_loop
+			;
+
+for_loop: for(init_exprn;cond;unary_exprn) {s}
+        | for(init_exprn;cond;unary_exprn) s s
+	   ;
+
+while_loop: while(cond) {s} s
+	     | while(cond) s s
+		;
+
+goto_label : label:s goto label
+		;
+
+access_specifier : public
+	            | private
+	            | protected
+	            ;
+
+dec_stat : type list_id
+	     ;
+
+init_exprn : assign_exprn,init_exprn
+		   | /*EMPTY*/
+	       ;
+
+args : type id,args
+     | args,type assign_exprn
+     | /*EMPTY*/
+     ;
+
+type : int
+     | float
+     | char
+     | double
+     | long
+     | long double
+     | long int
+     | long long
+     | unsigned type
+     ;
+
+list_id : id
+	   | id,list_id
+       | id[num]
+	   | /*EMPTY*/
+	   ;
+
+values : num
+	  | num,values
+	  ;
+
+assign_exprn : id = exprn, assign_exprn
+		  | id[num] = {values}
+		  | /*EMPTY*/
+	        ;
+
+exprn : (exprn)
+      | exprn+term
+      | exprn-term
+      | exprn bitop term
+      | term
+      ;
+
+term : term * factor
+     | term/factor
+     | factor
+     ;
+
+factor : id
+       | num
+       ;
+
+cond : log_exprn
+     | rel_exprn
+     | assign_exprn
+     ;
+
+rel_exprn : id relop id
+	     ;
+
+relop : LT
+      | GT
+      | LTEQ
+      | GTEQ
+      | NEQEQ
+      | EQEQ
+      ;
+
+log_exprn : id logop id
+          ;
+
+logop : OROR
+      | ANDAND
+      | XOR
+      ;
+
+unary_exprn : id uop exprn
+	       ;
+
+uop  : ADDEQ
+     | MINEQ
+     | MULEQ
+     | DIVEQ
+     ;
+
+sel_stmt : IF(cond) s
+         | IF(cond) s else s
+         | assign_exprn ? s:s
+         ;
+
+bitop : OR
+      | AND
+      | XOR
+      | RSHIFT
+      | LSHIFT
+      | ASHIFT
+      ;
