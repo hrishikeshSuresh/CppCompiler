@@ -170,7 +170,7 @@ void printPostorder(struct ast_node *node){
 // branch-wise traversal for syntax tree
 // pre-order of each node
 void LevelOrderTraversalAST(){
-	std::cout << "SYNTAX TREE (BRANCH - WISE - preOrder)" << std::endl;
+	std::cout << "SYNTAX TREE (BRANCH-WISE - LevelOrder)" << std::endl;
 	std::cout << syn_root->head_symbol << std::endl;
 	for(auto i:syn_root->children){;
 		LevelOrderTraversalEACHROOT(i);
@@ -298,4 +298,84 @@ void declare_assign_node_creation(){
 	temp_node->children.push_back(third_child);
 	S_ast.push_front(temp_node);
 	std::cout << "DECLR_AND_ASSIGN NODE created" << std::endl;
+}
+
+ast_node *general_declaration_in_loop(){
+	std::cout << "General declaration in loop" << std::endl;
+	std::string declr = "DECLR_STAT";
+	ast_node *temp = new ast_node;
+	temp->symbol = declr;
+	ast_node *branch1 = S_ast.front();
+	S_ast.pop_front();
+	ast_node *branch2 = S_ast.front();
+	S_ast.pop_front();
+	temp->children.push_back(branch1);
+	temp->children.push_back(branch2);
+	return temp;
+}
+
+void IF_Alternate(){
+	std::cout << "Creating new branch" << std::endl; 
+	// popping 'if'
+	ast_node *branch1 = S_ast.front();
+	S_ast.pop_front();
+	// IF_STRUCT is the header of 'if' statement
+	ast_node *if_struct =  new ast_node;
+	if_struct->symbol = "IF_STRUCT";
+	if_struct->children.push_back(branch1);
+
+
+	// popping statements till relop
+	std::string statement_symbol = "STATEMENT";
+	// new node for statement branch
+	ast_node *statement = new ast_node;
+	statement->symbol = statement_symbol;
+	ast_node *branch2 = S_ast.front();
+	S_ast.pop_front();
+	// pushing statement to STATEMENT node
+	statement->children.push_back(branch2);
+	LevelOrderTraversalEACHROOT(statement);
+	std::cout << std::endl;
+	// popping condition
+	ast_node *branch3 = S_ast.front();
+	S_ast.pop_front();
+	while(branch3->symbol != "=="){
+		if(branch3->symbol == "int"){
+			S_ast.push_front(branch3);
+			ast_node *temp = general_declaration_in_loop();
+			statement->children.push_back(temp);
+		}
+		else{
+			statement->children.push_back(branch3);
+		}
+		branch3 = S_ast.front();
+		S_ast.pop_front();
+	}
+	// COND is the header of condition
+	std::string condition_symbol = "COND";
+	// STATEMENT is the header of statement
+	// new node for condition branch
+	ast_node *cond = new ast_node;
+	cond->symbol = condition_symbol;
+	std::cout << "Added node names" << std::endl;
+	/*
+	ast_root->children.push_back(create_branch(statement, branch2));
+	ast_root->children.push_back(create_branch(cond, branch3));		
+	*/
+	// pushing condition to COND node
+	cond->children.push_back(branch3);
+	LevelOrderTraversalEACHROOT(if_struct);
+	std::cout << std::endl;
+	/*
+	LevelOrderTraversalEACHROOT(branch2);
+	LevelOrderTraversalEACHROOT(branch3);
+	*/
+	/*
+	ast_root->children.push_back(branch2);
+	ast_root->children.push_back(branch3);
+	*/
+	if_struct->children.push_back(cond);
+	if_struct->children.push_back(statement);
+	syn_root->children.push_back(if_struct);	
+	std::cout << "Added branches" << std::endl;
 }

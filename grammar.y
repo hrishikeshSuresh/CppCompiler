@@ -18,6 +18,7 @@
 	// flags for AST
 	int if_cond_flag = 0;
 	int declare_and_assign_flag = 0;
+	int nested_flag = 0;
 
 	typedef struct EXPRN{
 		char *value;
@@ -151,11 +152,17 @@ declaration_statement
 						if(declare_and_assign_flag == 1 && if_cond_flag != 1){
 							declare_and_assign_branch();
 						}
-						else if(declare_and_assign_flag == 1 && if_cond_flag != 1){
+						// if input is int a=10 not in if
+						else if(declare_and_assign_flag == 1 && if_cond_flag == 0){
 							declare_assign_node_creation();				
 						}
-						// if input is int a;
+						else if(declare_and_assign_flag == 0 && if_cond_flag == 1){
+						// test
+						std::cout << "STATEMENT IN IF LOOP" << std::endl;
+						}
 						else{
+							std::cout << "ELSE PATH" << std::endl;
+							std::cout << declare_and_assign_flag << " " << if_cond_flag << std::endl;
 							ast_node *central_node = central_node_creation(op);
 							syn_root->children.push_back(central_node);
 						}
@@ -481,7 +488,8 @@ selection_statement
 						id = "if";
 						S_ast.push_front(make_ast_leaf(id));
 						print_stack_elements();
-						IF_node_create_branch();
+						//IF_node_create_branch();
+						IF_Alternate();
 						print_stack_elements();
 					}
         | T_IF if_set_flag '(' expression ')' statement T_ELSE statement
