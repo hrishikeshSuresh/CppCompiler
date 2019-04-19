@@ -20,6 +20,9 @@ struct ast_body{
 	std::vector<ast_node*> children;
 };
 
+// to indicate the level
+int level = 0;	
+
 // stack to maintain leafs and nodes for AST
 std::deque<ast_node*> S_ast;
 
@@ -73,16 +76,16 @@ void declare_assign_node_creation();
 void general_declaration_in_loop();
 
 // if branch execution
-void IF_Alternate();
+void IF_Alternate(int if_cond_flag);
 
 // for branch execution
-void for_creation();
+void for_creation(int for_flag);
 
 // for unary expression (post-fix & pre-fix)
 void unary_expression_branch();
 
 // while branch execution
-void while_creation();
+void while_creation(int while_flag);
 
 // else branch execution;
 void else_creation();

@@ -25,7 +25,6 @@
 	int while_flag = 0;
 	// if 'for' is detected
 	int for_flag = 0;
-
 	typedef struct EXPRN{
 		char *value;
 		int type;
@@ -35,8 +34,7 @@
 		char *id;
 		EXPRN *exprn;
 	} DECLR;
-
-
+	
 	void yyerror(const char *s);
 	extern int yylineno;
 	extern char* yytext;
@@ -156,7 +154,7 @@ declaration_statement
 						std::string op = "DECLR_STAT";
 						// if input is 'int a = 10;' and inside loop
 						if(declare_and_assign_flag == 1){
-							declare_and_assign_branch(if_cond_flag, for_flag);
+							declare_and_assign_branch(if_cond_flag, for_flag, while_flag);
 						}
 						/*
 						if(declare_and_assign_flag == 1 && if_cond_flag != 1){
@@ -169,19 +167,21 @@ declaration_statement
 							declare_assign_node_creation();				
 						}
 						*/
-						else if(declare_and_assign_flag == 0 && (if_cond_flag == 1 || for_flag == 1)){
+						else if(declare_and_assign_flag == 0 && (if_cond_flag > 0 || for_flag > 0 || while_flag > 0)){
 							// declaration but not assigned
 							std::cout << "######STATEMENT IN IF LOOP" << std::endl;
 							general_declaration_in_loop();
 						}
 						// if input is int a=10 not in if
-						else if(declare_and_assign_flag == 1 && for_flag == 1){
+						else if(declare_and_assign_flag == 1 && for_flag > 0){
+							std::cout << "######FUDGE" << std::endl;
 							declare_assign_node_creation();				
 						}
 						// if declare_and_assign flag == 0
 						else{
 							std::cout << "######ELSE PATH" << std::endl;
 							std::cout << declare_and_assign_flag << " " << if_cond_flag << std::endl;
+							std::cout << for_flag << " " << while_flag << std::endl;
 							ast_node *central_node = central_node_creation(op);
 							syn_root->children.push_back(central_node);
 						}
@@ -498,7 +498,8 @@ expression_stmt
 
 if_set_flag
 		: 			{ 
-						if_cond_flag = 1;
+						level++;
+						if_cond_flag = level;
 						id = "if";
 						S_ast.push_front(make_ast_leaf(id)); 
 					}
@@ -518,7 +519,8 @@ selection_statement
 						std::cout << "######IF" <<std::endl;
 						print_stack_elements();
 						//IF_node_create_branch();
-						IF_Alternate();
+						IF_Alternate(if_cond_flag);
+						if_cond_flag--;
 						print_stack_elements();
 					}
         | T_IF if_set_flag '(' expression ')' statement T_ELSE else_stmt statement
@@ -528,7 +530,8 @@ selection_statement
 						else_creation();
 						print_stack_elements();
 						//IF_node_create_branch();
-						IF_Alternate();
+						IF_Alternate(if_cond_flag);
+						if_cond_flag--;
 						print_stack_elements();
 					}
         ;
@@ -540,7 +543,8 @@ iterative_statement
 
 for_set_flag
 		: 			{	 
-						for_flag = 1;
+						level++;
+						for_flag = level;
 						std::string f = "for";
 						S_ast.push_front(make_ast_leaf(f)); 
 					}
@@ -551,9 +555,9 @@ for_loop
 					{
 						std::cout << "######AST : FOR LOOP " << std::endl;
 						print_stack_elements();
-						for_creation();
+						for_creation(for_flag);
 						print_stack_elements();
-						for_flag = 0;
+						for_flag--;
 					}
   	   	;
 
@@ -579,8 +583,9 @@ for_decl_stmt
 		;
 
 while_set_flag
-		: 			{	 
-						while_flag = 1;
+		: 			{	
+						level++;
+						while_flag = level;
 						std::string f = "while";
 						S_ast.push_front(make_ast_leaf(f)); 
 					}
@@ -591,9 +596,9 @@ while_loop
 					{
 						std::cout << "######AST : FOR LOOP " << std::endl;
 						print_stack_elements();
-						while_creation();
+						while_creation(while_flag);
 						print_stack_elements();
-						while_flag = 0;
+						while_flag--;
 					}
   		;
 		   
@@ -628,15 +633,17 @@ assignment_expression
 						S_ast.push_front(make_ast_leaf(value));
 						std::string op = "=";
 						ast_node *central_node = central_node_creation(op);
+						/*
 						if(for_flag){
 							std::cout << "######FOR flag detected" << std::endl;				
 						}
-						if(!if_cond_flag && !for_flag){
-							std::cout << "######IF flag not detected" << std::endl;
+						*/
+						if(if_cond_flag == 0 && for_flag == 0 && while_flag == 0){
+							std::cout << "######IF/FOR/WHILE flag not detected" << std::endl;
 							syn_root->children.push_back(central_node);	
 						}
 						else{
-							std::cout << "######IF flag detected" << std::endl;
+							std::cout << "######IF/FOR/WHILE flag detected" << std::endl;
 							S_ast.push_front(central_node);
 						}
 						std::cout << ast_root->symbol << std::endl;				
@@ -1168,7 +1175,12 @@ int main(int argc, char *argv[])
 
 	std::cout << "Checking stack" << std::endl;
 	print_stack_elements();
-
+	ast_node *remains = new ast_node;
+	while(S_ast.size() > 0){
+		remains = S_ast.front();
+		syn_root->children.push_back(remains);
+		S_ast.pop_front();
+	}
 	LevelOrderTraversalAST();
     return 0;
 }

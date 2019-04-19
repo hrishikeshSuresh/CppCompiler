@@ -11,6 +11,9 @@ if(a==12){
 	int c;
 	int d;
 	c=1;
+	if(c==1){
+		int U;
+	}
 	d = c + d;
 }
 if(global>=12){

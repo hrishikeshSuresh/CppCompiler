@@ -242,7 +242,7 @@ void IF_node_create_branch(){
 }
 */
 
-void declare_and_assign_branch(int if_flag, int for_flag){
+void declare_and_assign_branch(int if_flag, int for_flag, int while_flag){
 	std::string op = "DECLR_STAT";
 	std::cout << "######DECLR_AND_ASSIGN BRANCH declare_and_assign_branch()" << std::endl;
 	// pop int, a, value
@@ -261,7 +261,7 @@ void declare_and_assign_branch(int if_flag, int for_flag){
 	temp_node->children.push_back(second_child);
 	temp_node->children.push_back(third_child);
 	std::cout << "######AST : node created at " << op << std::endl;	
-	if(if_flag == 1 || for_flag == 1){
+	if(if_flag > 0 || for_flag > 0 || while_flag > 0){
 		S_ast.push_front(temp_node);
 		std::cout << "node pushed into stack" << std::endl;
 	}
@@ -309,7 +309,7 @@ void general_declaration_in_loop(){
 
 // core
 // if
-void IF_Alternate(){
+void IF_Alternate(int if_cond_flag){
 	std::cout << "######Creating new branch" << std::endl;
 	std::deque<ast_node*> temp;
 	// start with popping
@@ -351,7 +351,10 @@ void IF_Alternate(){
 	if_struct->children.push_back(branch1);
 	if_struct->children.push_back(cond);
 	if_struct->children.push_back(statement);
-	syn_root->children.push_back(if_struct);
+	if(if_cond_flag > 1)
+		S_ast.push_front(if_struct);
+	else
+		syn_root->children.push_back(if_struct);
 	std::cout << "######IF added to the tree" << std::endl;
 	return;
 	// popping 'if'
@@ -424,7 +427,7 @@ void IF_Alternate(){
 }
 
 // for branch execution
-void for_creation(){
+void for_creation(int for_flag){
 	std::cout << "######BRANCH EXECUTION" << std::endl;
 	std::deque<ast_node*> temp;
 	// start with popping
@@ -484,7 +487,10 @@ void for_creation(){
 		statement->children.push_back(tmp_branch);
 	}
 	for_struct->children.push_back(statement);
-	syn_root->children.push_back(for_struct);
+	if(for_flag > 1)
+		S_ast.push_front(for_struct);
+	else
+		syn_root->children.push_back(for_struct);
 	std::cout << "######FOR added to the tree" << std::endl;
 	return;
 }
@@ -500,7 +506,7 @@ void unary_expression_branch(std::string identifier, std::string uop){
 	return;
 }
 
-void while_creation(){
+void while_creation(int while_flag){
 	std::cout << "######Creating new branch" << std::endl;
 	std::deque<ast_node*> temp;
 	// start with popping
@@ -542,7 +548,10 @@ void while_creation(){
 	while_struct->children.push_back(branch1);
 	while_struct->children.push_back(cond);
 	while_struct->children.push_back(statement);
-	syn_root->children.push_back(while_struct);
+	if(while_flag > 1)
+		S_ast.push_front(while_struct);
+	else
+		syn_root->children.push_back(while_struct);
 	std::cout << "######WHILE added to the tree" << std::endl;
 	return;
 }
