@@ -80,3 +80,9 @@ void for_creation();
 
 // for unary expression (post-fix & pre-fix)
 void unary_expression_branch();
+
+// while branch execution
+void while_creation();
+
+// else branch execution;
+void else_creation();

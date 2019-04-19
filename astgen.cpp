@@ -348,9 +348,11 @@ void IF_Alternate(){
 		std::cout << "popping and adding " << tmp_branch->symbol << std::endl;
 		statement->children.push_back(tmp_branch);
 	}
+	if_struct->children.push_back(branch1);
+	if_struct->children.push_back(cond);
 	if_struct->children.push_back(statement);
 	syn_root->children.push_back(if_struct);
-	std::cout << "######FOR added to the tree" << std::endl;
+	std::cout << "######IF added to the tree" << std::endl;
 	return;
 	// popping 'if'
 	/*
@@ -495,5 +497,92 @@ void unary_expression_branch(std::string identifier, std::string uop){
 	unary_expr->children.push_back(make_ast_leaf(uop));
 	S_ast.push_front(unary_expr);
 	std::cout << "######UOP added to stack" << std::endl;
+	return;
+}
+
+void while_creation(){
+	std::cout << "######Creating new branch" << std::endl;
+	std::deque<ast_node*> temp;
+	// start with popping
+	ast_node *branch1 = S_ast.front();
+	S_ast.pop_front();
+	std::cout << branch1->symbol << std::endl;
+	// pop till we find for
+	while(branch1->symbol != "while"){
+		std::cout << "adding " << branch1->symbol << std::endl;
+		temp.push_front(branch1);
+		if(S_ast.size() > 0){
+			branch1 = S_ast.front();
+			std::cout << "popping ";
+			std::cout << branch1->symbol << std::endl;
+			S_ast.pop_front();
+		}
+	}
+	// branch1 will contain 'if'
+	ast_node *while_struct = new ast_node;
+	while_struct->symbol = "WHILE_STRUCT";
+	// for condition
+	ast_node *cond = new ast_node;
+	cond->symbol = "COND";
+	ast_node *branch2 = temp.front();
+	cond->children.push_back(branch2);
+	temp.pop_front();
+	// attach all children 'if'
+	// add the statements
+	ast_node *statement = new ast_node;
+	statement->symbol = "STATEMENT";
+	ast_node *tmp_branch = new ast_node;
+	std::cout << temp.size() << std::endl;
+	while(temp.size() > 0){
+		tmp_branch =  temp.front();
+		temp.pop_front();
+		std::cout << "popping and adding " << tmp_branch->symbol << std::endl;
+		statement->children.push_back(tmp_branch);
+	}
+	while_struct->children.push_back(branch1);
+	while_struct->children.push_back(cond);
+	while_struct->children.push_back(statement);
+	syn_root->children.push_back(while_struct);
+	std::cout << "######WHILE added to the tree" << std::endl;
+	return;
+}
+
+void else_creation(){
+	std::cout << "######Creating new branch" << std::endl;
+	std::deque<ast_node*> temp;
+	// start with popping
+	ast_node *branch1 = S_ast.front();
+	S_ast.pop_front();
+	std::cout << branch1->symbol << std::endl;
+	// pop till we find for
+	while(branch1->symbol != "else"){
+		std::cout << "adding " << branch1->symbol << std::endl;
+		temp.push_front(branch1);
+		if(S_ast.size() > 0){
+			branch1 = S_ast.front();
+			std::cout << "popping ";
+			std::cout << branch1->symbol << std::endl;
+			S_ast.pop_front();
+		}
+	}
+	// branch1 will contain 'if'
+	ast_node *else_struct = new ast_node;
+	else_struct->symbol = "ELSE_STRUCT";
+	// attach all children 'if'
+	// add the statements
+	ast_node *statement = new ast_node;
+	statement->symbol = "STATEMENT";
+	ast_node *tmp_branch = new ast_node;
+	std::cout << temp.size() << std::endl;
+	while(temp.size() > 0){
+		tmp_branch =  temp.front();
+		temp.pop_front();
+		std::cout << "popping and adding " << tmp_branch->symbol << std::endl;
+		statement->children.push_back(tmp_branch);
+	}
+	else_struct->children.push_back(branch1);
+	else_struct->children.push_back(statement);
+	S_ast.push_front(else_struct);
+	std::cout << "######IF added to the tree" << std::endl;
 	return;
 }

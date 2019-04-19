@@ -12,4 +12,11 @@ for(i=10; i<5; i++){
 		int b;
 		b = b + 1;
 	}
+	else{
+		int y;		
+	}
+}
+while(i<5){
+	int y = 1;
+	y = y + 1;
 }

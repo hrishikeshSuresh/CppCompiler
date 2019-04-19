@@ -13,9 +13,10 @@ if(a==12){
 	c=1;
 	d = c + d;
 }
-if(global==12){
+if(global>=12){
 	int e;
 	int f;
 	e=1;
 	f = f + e;
 }
+return a;

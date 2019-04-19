@@ -21,6 +21,8 @@
 	// int a = 10;
 	int declare_and_assign_flag = 0;
 	int nested_flag = 0;
+	// if 'while' is detected
+	int while_flag = 0;
 	// if 'for' is detected
 	int for_flag = 0;
 
@@ -502,6 +504,14 @@ if_set_flag
 					}
 		;
 
+else_stmt
+		:
+					{
+						id = "else";
+						S_ast.push_front(make_ast_leaf(id)); 
+					}
+		;
+
 selection_statement 
 		: T_IF if_set_flag '(' expression ')' statement
 					{
@@ -511,7 +521,16 @@ selection_statement
 						IF_Alternate();
 						print_stack_elements();
 					}
-        | T_IF if_set_flag '(' expression ')' statement T_ELSE statement
+        | T_IF if_set_flag '(' expression ')' statement T_ELSE else_stmt statement
+					{
+						std::cout << "######IF" <<std::endl;
+						print_stack_elements();
+						else_creation();
+						print_stack_elements();
+						//IF_node_create_branch();
+						IF_Alternate();
+						print_stack_elements();
+					}
         ;
 					
 iterative_statement 
@@ -528,7 +547,7 @@ for_set_flag
 		;
 
 for_loop 
-		: {} T_FOR  for_set_flag '(' for_assgn_stmt ';' {} expression ';' {} unary_exprn ')' {} statement
+		: T_FOR  for_set_flag '(' for_assgn_stmt ';' {} expression ';' unary_exprn ')' statement
 					{
 						std::cout << "######AST : FOR LOOP " << std::endl;
 						print_stack_elements();
@@ -559,12 +578,34 @@ for_decl_stmt
 		| for_decl_stmt ',' T_IDENTIFIER '=' expression
 		;
 
+while_set_flag
+		: 			{	 
+						while_flag = 1;
+						std::string f = "while";
+						S_ast.push_front(make_ast_leaf(f)); 
+					}
+		;
+
 while_loop 
-		: T_WHILE '(' expression ')' statement
+		: T_WHILE while_set_flag '(' expression ')' statement
+					{
+						std::cout << "######AST : FOR LOOP " << std::endl;
+						print_stack_elements();
+						while_creation();
+						print_stack_elements();
+						while_flag = 0;
+					}
   		;
 		   
 return_stmt 
-		: T_RETURN ';'
+		: T_RETURN ';' 
+					{
+						//AST
+						ast_node *return_stmt = new ast_node;
+						return_stmt->symbol = "RETURN_STMT";
+						return_stmt->children.push_back(make_ast_leaf("return"));
+						syn_root->children.push_back(return_stmt);						
+					}
 		| T_RETURN expression ';'
 		;
 			
@@ -626,7 +667,17 @@ assignment_expression
 					  
 unary_exprn 
 		: T_ADDADD T_IDENTIFIER
+					{
+						std::cout << "######AST :  IDENTIFIER " << $1 << " UNARYOP " << $2 << std::endl;
+						unary_expression_branch($1, "++");
+												 		
+					}
 		| T_MINMIN T_IDENTIFIER
+					{
+						std::cout << "######AST :  IDENTIFIER " << $1 << " UNARYOP " << $2 << std::endl;
+						unary_expression_branch($1, "--");
+												 		
+					}
        	| postfix_expression
       	| T_IDENTIFIER uop_shorthd expression
 		;
@@ -672,7 +723,7 @@ simple_expression
 		| additive_expression relop additive_expression
 					{
 						print_stack_elements();
-						std::cout << "######AST : == " << std::endl;
+						std::cout << "######AST : relop " << std::endl;
 						std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
 						ast_node *branch1 = S_ast.front();
 						S_ast.pop_front();
@@ -684,7 +735,33 @@ simple_expression
 						S_ast.push_front(central_node);
 					}
 		| additive_expression logop additive_expression
+					{
+						print_stack_elements();
+						std::cout << "######AST : logop " << std::endl;
+						std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
+						ast_node *branch1 = S_ast.front();
+						S_ast.pop_front();
+						ast_node *branch2 = S_ast.front();
+						S_ast.pop_front();
+						ast_node *branch3 = S_ast.front();
+						S_ast.pop_front();
+						ast_node *central_node = make_ast_node(branch2->symbol, branch1, branch3);
+						S_ast.push_front(central_node);
+					}
 		| additive_expression bitop additive_expression
+					{
+						print_stack_elements();
+						std::cout << "######AST : bitop " << std::endl;
+						std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
+						ast_node *branch1 = S_ast.front();
+						S_ast.pop_front();
+						ast_node *branch2 = S_ast.front();
+						S_ast.pop_front();
+						ast_node *branch3 = S_ast.front();
+						S_ast.pop_front();
+						ast_node *central_node = make_ast_node(branch2->symbol, branch1, branch3);
+						S_ast.push_front(central_node);
+					}
 		;
 				  
 bitop 
