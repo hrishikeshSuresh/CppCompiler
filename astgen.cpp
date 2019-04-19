@@ -10,6 +10,7 @@
 #include<bits/stdc++.h>
 #include "astgen.h"
 
+// core
 // make a node for AST
 ast_node *make_ast_node(std::string op, struct ast_node *left_leaf, struct ast_node *right_leaf){
 	ast_node *temp_node = new ast_node;
@@ -22,10 +23,11 @@ ast_node *make_ast_node(std::string op, struct ast_node *left_leaf, struct ast_n
 	// for the generic tree
 	temp_node->children.push_back(left_leaf);
 	temp_node->children.push_back(right_leaf);
-	std::cout << "AST : node created at " << op << std::endl;
+	std::cout << "######AST : node created at " << op << std::endl;
 	return temp_node;
 }
 
+// core
 // make a leaf for AST
 ast_node *make_ast_leaf(std::string val){
 	ast_node *temp_leaf = new ast_node;
@@ -38,10 +40,11 @@ ast_node *make_ast_leaf(std::string val){
 	// for generic tree
 	//temp_leaf->children.push_back(NULL);
 	temp_leaf->children.push_back(NULL);
-	std::cout << "AST : leaf created at " << val << std::endl;
+	std::cout << "######AST : leaf created at " << val << std::endl;
 	return temp_leaf;
 }
 
+// core
 // Prints the branch in pre-order like fashion
 void LevelOrderTraversalEACHROOT(ast_node *root){ 
     if (root==NULL) 
@@ -72,46 +75,53 @@ void LevelOrderTraversalEACHROOT(ast_node *root){
 	*/ 
 } 
 
+// deprecated
 // create a branches on node
 ast_node *create_branch(ast_node *i_root, ast_node *branch){
-	std::cout << "BRANCH CREATION : " << branch->symbol << std::endl;
+	std::cout << "######BRANCH CREATION : " << branch->symbol << std::endl;
 	i_root->children.push_back(branch);
 	LevelOrderTraversalEACHROOT(i_root);
 	std::cout << std::endl;
 	return i_root;
 }
 
+// core, expression evaluation
 // central node creation of exp evaluation
 ast_node *central_node_creation(std::string op){
+	std::cout << "######NODE CREATION : RL EXPRESSION EVALUATION central_node_creation()" << std::endl;
 	ast_node *left_leaf = S_ast.front();
 	S_ast.pop_front();
 	ast_node *right_leaf = S_ast.front();
 	S_ast.pop_front();
-	std::cout << "Popping " << right_leaf->symbol << " and " << left_leaf->symbol << std::endl;
+	std::cout << "######Popping " << right_leaf->symbol << " and " << left_leaf->symbol << std::endl;
 	ast_node *central_node = make_ast_node(op, left_leaf, right_leaf);
 	return central_node;
 }
 
+// core
 // alternate central node creation for exp evaluation
 ast_node *central_node_creation_exp(std::string op){
+	std::cout << "######NODE CREATION : LR EXPRESSION EVALUATION central_node_creation_exp()" << std::endl;
 	ast_node *right_leaf = S_ast.front();
 	S_ast.pop_front();
 	ast_node *left_leaf = S_ast.front();
 	S_ast.pop_front();
-	std::cout << "Popping " << right_leaf->symbol << " and " << left_leaf->symbol << std::endl;
+	std::cout << "######Popping " << right_leaf->symbol << " and " << left_leaf->symbol << std::endl;
 	ast_node *central_node = make_ast_node(op, left_leaf, right_leaf);
 	return central_node;
 }
 
+// core
 // declaration and expression
 ast_node *central_node_creation_declaration(std::string op){
+	std::cout << "######NODE CREATION : DECLR & EXPRESSION EVALUATION central_node_creation_declaration()" << std::endl;
 	ast_node *right_leaf = S_ast.front();
 	S_ast.pop_front();
 	ast_node *left_leaf = S_ast.front();
 	S_ast.pop_front();
 	ast_node *next_leaf = S_ast.front();
 	S_ast.pop_front();
-	std::cout << "Popping " << right_leaf->symbol << " and " << left_leaf->symbol << " and " << next_leaf->symbol << std::endl;
+	std::cout << "######Popping " << right_leaf->symbol << " and " << left_leaf->symbol << " and " << next_leaf->symbol << std::endl;
 	ast_node *central_node = make_ast_node(op, left_leaf, right_leaf);
 	central_node->children.push_back(next_leaf);
 	return central_node;
@@ -138,6 +148,7 @@ void printPostorder(struct ast_node *node){
 }
 */
 
+// core
 // branch-wise traversal for syntax tree
 void LevelOrderTraversalAST(){
 	std::cout << "SYNTAX TREE (BRANCH-WISE - LevelOrder)" << std::endl;
@@ -174,8 +185,9 @@ void print_stack_elements(){
 	std::cout << "-----------------" << std::endl;
 }
 
+// deprecated
 void IF_node_create_branch(){
-	std::cout << "Creating new branch" << std::endl; 
+	std::cout << "######Creating new branch" << std::endl; 
 	// popping 'if'
 	ast_node *branch1 = S_ast.front();
 	S_ast.pop_front();
@@ -199,7 +211,7 @@ void IF_node_create_branch(){
 	// new node for condition branch
 	ast_node *cond = new ast_node;
 	cond->symbol = condition_symbol;
-	std::cout << "Added node names" << std::endl;
+	std::cout << "######Added node names" << std::endl;
 	/*
 	ast_root->children.push_back(create_branch(statement, branch2));
 	ast_root->children.push_back(create_branch(cond, branch3));		
@@ -223,12 +235,12 @@ void IF_node_create_branch(){
 	syn_root->children.push_back(if_struct);	
 	syn_root->children.push_back(cond);
 	syn_root->children.push_back(statement);
-	std::cout << "Added branches" << std::endl;
+	std::cout << "######Added branches" << std::endl;
 }
 
-void declare_and_assign_branch(){
+void declare_and_assign_branch(int if_flag, int for_flag){
 	std::string op = "DECLR_STAT";
-	std::cout << "DECLR_AND_ASSIGN BRANCH" << std::endl;
+	std::cout << "######DECLR_AND_ASSIGN BRANCH declare_and_assign_branch()" << std::endl;
 	// pop int, a, value
 	// so there are three pops
 	ast_node *first_child = S_ast.front();
@@ -238,19 +250,26 @@ void declare_and_assign_branch(){
 	ast_node *third_child = S_ast.front();
 	S_ast.pop_front();
 	// create NODE with value
-	std::cout << "LEAFS : " <<first_child->symbol << " " << second_child->symbol << " " << third_child->symbol << std::endl; 
+	std::cout << "######LEAFS : " <<first_child->symbol << " " << second_child->symbol << " " << third_child->symbol << std::endl; 
 	ast_node *temp_node = new ast_node;
 	temp_node->symbol = op;
 	temp_node->children.push_back(first_child);
 	temp_node->children.push_back(second_child);
 	temp_node->children.push_back(third_child);
-	syn_root->children.push_back(temp_node);
-	std::cout << "AST : node created at " << op << std::endl;
+	std::cout << "######AST : node created at " << op << std::endl;	
+	if(if_flag == 1 || for_flag == 1){
+		S_ast.push_front(temp_node);
+		std::cout << "node pushed into stack" << std::endl;
+	}
+	else{	
+		syn_root->children.push_back(temp_node);
+		std::cout << "node pushed into tree" << std::endl;	
+	}
 }
 
 void declare_assign_node_creation(){
 	std::string op = "DECLR_STAT";
-	std::cout << "DECLR_AND_ASSIGN BRANCH" << std::endl;
+	std::cout << "######DECLR_AND_ASSIGN BRANCH declare_assign_node_creation()" << std::endl;
 	// pop int, a, value
 	// so there are three pops
 	ast_node *first_child = S_ast.front();
@@ -267,11 +286,11 @@ void declare_assign_node_creation(){
 	temp_node->children.push_back(second_child);
 	temp_node->children.push_back(third_child);
 	S_ast.push_front(temp_node);
-	std::cout << "DECLR_AND_ASSIGN NODE created" << std::endl;
+	std::cout << "######DECLR_AND_ASSIGN NODE created" << std::endl;
 }
 
 ast_node *general_declaration_in_loop(){
-	std::cout << "General declaration in loop" << std::endl;
+	std::cout << "######General declaration in loop" << std::endl;
 	std::string declr = "DECLR_STAT";
 	ast_node *temp = new ast_node;
 	temp->symbol = declr;
@@ -284,8 +303,10 @@ ast_node *general_declaration_in_loop(){
 	return temp;
 }
 
+// core
+// if
 void IF_Alternate(){
-	std::cout << "Creating new branch" << std::endl; 
+	std::cout << "######Creating new branch" << std::endl; 
 	// popping 'if'
 	ast_node *branch1 = S_ast.front();
 	S_ast.pop_front();
@@ -327,7 +348,7 @@ void IF_Alternate(){
 	// new node for condition branch
 	ast_node *cond = new ast_node;
 	cond->symbol = condition_symbol;
-	std::cout << "Added node names" << std::endl;
+	std::cout << "######Added node names" << std::endl;
 	/*
 	ast_root->children.push_back(create_branch(statement, branch2));
 	ast_root->children.push_back(create_branch(cond, branch3));		
@@ -347,5 +368,82 @@ void IF_Alternate(){
 	if_struct->children.push_back(cond);
 	if_struct->children.push_back(statement);
 	syn_root->children.push_back(if_struct);	
-	std::cout << "Added branches" << std::endl;
+	std::cout << "######IF added to the tree" << std::endl;
+}
+
+// for branch execution
+void for_creation(){
+	std::cout << "######BRANCH EXECUTION" << std::endl;
+	std::deque<ast_node*> temp;
+	// start with popping
+	ast_node *branch1 = S_ast.front();
+	S_ast.pop_front();
+	std::cout << branch1->symbol << std::endl;
+	// pop till we find for
+	while(branch1->symbol != "for"){
+		std::cout << "adding " << branch1->symbol << std::endl;
+		temp.push_front(branch1);
+		if(S_ast.size() > 0){
+			branch1 = S_ast.front();
+			std::cout << "popping ";
+			std::cout << branch1->symbol << std::endl;
+			S_ast.pop_front();
+		}
+	}
+	// branch1 will contain 'for'
+	ast_node *for_struct = new ast_node;
+	for_struct->symbol = "FOR_STRUCT";
+	// for init expression in 'for' loop
+	ast_node *init_expr = new ast_node;
+	init_expr->symbol = "INIT";
+	ast_node *branch2 = temp.front();
+	init_expr->children.push_back(branch2);
+	temp.pop_front();
+	// for condition expression in 'for' loop
+	ast_node *cond_expr = new ast_node;
+	cond_expr->symbol = "COND"; 
+	ast_node *branch3 = temp.front();
+	cond_expr->children.push_back(branch3);
+	temp.pop_front();
+	// for unary expression in 'for' loop
+	/*
+	ast_node *uop_expr = new ast_node;
+	uop_expr->symbol = "UNARYOP" 
+	*/
+	ast_node *branch4 = temp.front();
+	/*
+	uop_expr->children.push_back(branch4);
+	*/
+	temp.pop_front();
+	// attach all children 'for'
+	for_struct->children.push_back(branch1);
+	for_struct->children.push_back(init_expr);
+	for_struct->children.push_back(cond_expr);
+	for_struct->children.push_back(branch4);
+	// add the statements
+	ast_node *statement = new ast_node;
+	statement->symbol = "STATEMENT";
+	ast_node *tmp_branch = new ast_node;
+	std::cout << temp.size() << std::endl;
+	while(temp.size() > 0){
+		tmp_branch =  temp.front();
+		temp.pop_front();
+		std::cout << "popping and adding " << tmp_branch->symbol << std::endl;
+		statement->children.push_back(tmp_branch);
+	}
+	for_struct->children.push_back(statement);
+	syn_root->children.push_back(for_struct);
+	std::cout << "######FOR added to the tree" << std::endl;
+	return;
+}
+
+// to create nodes for unary expression (post-fix & pre-fix)
+void unary_expression_branch(std::string identifier, std::string uop){
+	ast_node *unary_expr = new ast_node;
+	unary_expr->symbol = "UNARY EXPR";
+	unary_expr->children.push_back(make_ast_leaf(identifier));
+	unary_expr->children.push_back(make_ast_leaf(uop));
+	S_ast.push_front(unary_expr);
+	std::cout << "######UOP added to stack" << std::endl;
+	return;
 }

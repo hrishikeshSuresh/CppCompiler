@@ -72,3 +72,9 @@ ast_node *general_declaration_in_loop();
 
 // if branch execution
 void IF_Alternate();
+
+// for branch execution
+void for_creation();
+
+// for unary expression (post-fix & pre-fix)
+void unary_expression_branch();

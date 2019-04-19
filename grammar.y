@@ -16,9 +16,13 @@
 	#include "symtab.cpp"
 	#include "astgen.cpp"
 	// flags for AST
+	// if 'if' is detected
 	int if_cond_flag = 0;
+	// int a = 10;
 	int declare_and_assign_flag = 0;
 	int nested_flag = 0;
+	// if 'for' is detected
+	int for_flag = 0;
 
 	typedef struct EXPRN{
 		char *value;
@@ -139,7 +143,7 @@ declaration_statement
 		: T_TYPE list_identifier ';' 
 					{
 						// AST
-						std::cout << "AST : declaration_statement Type " << $1 << std::endl;
+						std::cout << "######AST : declaration_statement Type " << $1 << std::endl;
 
 						print_stack_elements();
 
@@ -148,26 +152,38 @@ declaration_statement
 						S_ast.push_front(make_ast_leaf(value));
 						print_stack_elements();
 						std::string op = "DECLR_STAT";
-						// if input is int a = 10;
+						// if input is 'int a = 10;' and inside loop
+						if(declare_and_assign_flag == 1){
+							declare_and_assign_branch(if_cond_flag, for_flag);
+						}
+						/*
 						if(declare_and_assign_flag == 1 && if_cond_flag != 1){
 							declare_and_assign_branch();
 						}
+						*/
 						// if input is int a=10 not in if
+						/*
 						else if(declare_and_assign_flag == 1 && if_cond_flag == 0){
 							declare_assign_node_creation();				
 						}
+						*/
 						else if(declare_and_assign_flag == 0 && if_cond_flag == 1){
-						// test
-						std::cout << "STATEMENT IN IF LOOP" << std::endl;
+							// test
+							std::cout << "######STATEMENT IN IF LOOP" << std::endl;
 						}
+						// if input is int a=10 not in if
+						else if(declare_and_assign_flag == 1 && for_flag == 1){
+							declare_assign_node_creation();				
+						}
+						// if declare_and_assign flag == 0
 						else{
-							std::cout << "ELSE PATH" << std::endl;
+							std::cout << "######ELSE PATH" << std::endl;
 							std::cout << declare_and_assign_flag << " " << if_cond_flag << std::endl;
 							ast_node *central_node = central_node_creation(op);
 							syn_root->children.push_back(central_node);
 						}
 						declare_and_assign_flag = 0;
-						std::cout << "AST : " << ast_root->symbol << std::endl;								
+						std::cout << "######AST : " << ast_root->symbol << std::endl;								
 						// SYMTAB
 						while(!st.empty()){
 							DECLR *temp = st.top();
@@ -231,7 +247,7 @@ variable
 						temp->exprn = NULL;
 						$$ = temp;
 						//AST
-						std::cout << "AST : List identifier "<< $1 << std::endl;
+						std::cout << "######AST : List identifier "<< $1 << std::endl;
 						id = $1;
 						S_ast.push_front(make_ast_leaf(id));					
 					}
@@ -273,13 +289,13 @@ var_init
 						temp->exprn = $3;
 						$$ = temp;
 						//AST
-						std::cout << "AST : var_init Assignment" << std::endl;
+						std::cout << "######AST : var_init Assignment" << std::endl;
 						value = std::string($1);
 						S_ast.push_front(make_ast_leaf(value));
-						std::cout << "AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
+						std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
 						print_stack_elements();
 						declare_and_assign_flag = 1;
-						std::cout << "DECLARE & ASSIGN FLAG set to 1" << std::endl;
+						std::cout << "######DECLARE & ASSIGN FLAG set to 1" << std::endl;
 						/*std::string op = "=";
 						ast_node *central_node = central_node_creation(op);
 						syn_root->children.push_back(central_node);
@@ -484,7 +500,7 @@ if_set_flag
 selection_statement 
 		: T_IF if_set_flag '(' expression ')' statement
 					{
-						std::cout << "IF" <<std::endl;
+						std::cout << "######IF" <<std::endl;
 						id = "if";
 						S_ast.push_front(make_ast_leaf(id));
 						print_stack_elements();
@@ -500,12 +516,24 @@ iterative_statement
 		| while_loop
   		;
 
+for_set_flag
+		: 			{	 
+						for_flag = 1;
+						std::string f = "for";
+						S_ast.push_front(make_ast_leaf(f)); 
+					}
+		;
+
 for_loop 
-		: {} T_FOR '(' {} for_assgn_stmt ';' {} expression ';' {} unary_exprn ')' {} statement
+		: {} T_FOR  for_set_flag '(' for_assgn_stmt ';' {} expression ';' {} unary_exprn ')' {} statement
 					{
-						std::cout << "AST : List identifier "<< $2 << std::endl;
+						std::cout << "######AST : FOR LOOP " << std::endl;
+						/*
 						id = "for";
 						S_ast.push_front(make_ast_leaf(id));					
+						*/
+						print_stack_elements();
+						for_creation();
 						print_stack_elements();
 					}
   	   	;
@@ -513,7 +541,7 @@ for_loop
 for_assgn_stmt 
 		: T_TYPE for_decl_stmt
 					{
-						std::cout << "TYPE " << $1 << std::endl;
+						std::cout << "######AST : for_assgn_stmt T_TYPE " << $1 << std::endl;
 						value = $1;
 						S_ast.push_front(make_ast_leaf(value));	
 					}
@@ -524,17 +552,7 @@ for_decl_stmt
 		: T_IDENTIFIER '=' expression 
 					{
 						//AST
-						/*
-						std::cout << "AST : Declaration Assignment" << std::endl;
-						std::cout << "AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
-						std::string op = "=";
-						value = std::string($1);
-						S_ast.push_front(make_ast_leaf(value));
-						ast_node *central_node = central_node_creation(op);
-						syn_root->children.push_back(central_node);
-						std::cout << ast_root->symbol << std::endl;
-						*/
-						std::cout << "AST : for_decl_stmt T_IDENTIFIER " << $1 << std::endl;
+						std::cout << "######AST : for_decl_stmt T_IDENTIFIER " << $1 << std::endl;
 						value = std::string($1);
 						S_ast.push_front(make_ast_leaf(value));						
 					} 
@@ -562,19 +580,22 @@ assignment_expression
 		: T_IDENTIFIER '=' expression 
 					{ 
 						//AST
-						std::cout << "AST : assignment_exp Assignment" << std::endl;
+						std::cout << "######AST : assignment_exp Assignment" << std::endl;
 						print_stack_elements();
-						std::cout << "AST : $1 : " << $1 << " $3 : " << $3 << std::endl;	
+						std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;	
 						value = std::string($1);
 						S_ast.push_front(make_ast_leaf(value));
 						std::string op = "=";
 						ast_node *central_node = central_node_creation(op);
-						if(!if_cond_flag){
-							std::cout << "IF flag not detected" << std::endl;
+						if(for_flag){
+							std::cout << "######FOR flag detected" << std::endl;				
+						}
+						if(!if_cond_flag && !for_flag){
+							std::cout << "######IF flag not detected" << std::endl;
 							syn_root->children.push_back(central_node);	
 						}
 						else{
-							std::cout << "IF flag detected" << std::endl;
+							std::cout << "######IF flag detected" << std::endl;
 							S_ast.push_front(central_node);
 						}
 						std::cout << ast_root->symbol << std::endl;				
@@ -592,7 +613,7 @@ assignment_expression
 						std::cout<<"Type of var found is "<<t2<<std::endl;
 						*/
 					  	if((t2==1||t2==2)&&(t==3)){
-							std::cout<<"Type mismatch at "<<yylineno<<std::endl;
+							std::cout << "Type mismatch at " << yylineno << std::endl;
 							exit(0);
 					  	}
 					  	if(t2==1)
@@ -612,14 +633,35 @@ unary_exprn
 			
 postfix_expression 
 		: T_IDENTIFIER T_ADDADD
+					{
+						std::cout << "######AST :  IDENTIFIER " << $1 << " UNARYOP " << $2 << std::endl;
+						unary_expression_branch($1, "++");
+												 		
+					}
 		| T_IDENTIFIER T_MINMIN
+					{
+						std::cout << "######AST :  IDENTIFIER " << $1 << " UNARYOP " << $2 << std::endl;
+						unary_expression_branch($1, "--"); 		
+					}
 		;
 
 uop_shorthd  
 		: T_ADDEQ
+					{
+						std::cout << "######AST :  Short Hand Unary Op " << $1 << std::endl; 		
+					}
         | T_MINEQ
+					{
+						std::cout << "######AST :  Short Hand Unary Op " << $1 << std::endl; 		
+					}
         | T_MULEQ
+					{
+						std::cout << "######AST :  Short Hand Unary Op " << $1 << std::endl; 		
+					}
         | T_DIVEQ
+					{
+						std::cout << "######AST :  Short Hand Unary Op " << $1 << std::endl; 		
+					}
 		;
 			 
 simple_expression 
@@ -630,8 +672,8 @@ simple_expression
 		| additive_expression relop additive_expression
 					{
 						print_stack_elements();
-						std::cout << "AST : == " << std::endl;
-						std::cout << "AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
+						std::cout << "######AST : == " << std::endl;
+						std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
 						ast_node *branch1 = S_ast.front();
 						S_ast.pop_front();
 						ast_node *branch2 = S_ast.front();
@@ -647,26 +689,71 @@ simple_expression
 				  
 bitop 
 		: T_OR
+					{
+						std::cout << "######BITOP : " << " | " << std::endl;
+						value = "|";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
    	  	| T_AND
+					{
+						std::cout << "######BITOP : " << " & " << std::endl;
+						value = "&";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
 	  	| T_XOR
+					{
+						std::cout << "######BITOP : " << " ^ " << std::endl;
+						value = "^";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
 	  	| T_LRSHIFT
+					{
+						std::cout << "######BITOP : " << " >> " << std::endl;
+						value = ">>";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
 	  	| T_LLSHIFT
+					{
+						std::cout << "######BITOP : " << " << " << std::endl;
+						value = "<<";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
 	  	;
 				  
 relop 
 		: '<'
+					{
+						std::cout << "######RELOP : " << "< " << std::endl;
+						value = "<";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
       	| '>'
+					{
+						std::cout << "######RELOP : " << ">" << std::endl;
+						value = ">";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
 	  	| T_LTEQ
+					{
+						std::cout << "######RELOP : " << "<=" << std::endl;
+						value = "<=";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
 	  	| T_GTEQ
 					{
-						std::cout << "RELOP : " << ">=" << std::endl;
+						std::cout << "######RELOP : " << ">=" << std::endl;
 						value = ">=";
 						S_ast.push_front(make_ast_leaf(value));		
 					}
 	  	| T_NEQEQ
+					{
+						std::cout << "######RELOP : " << "!=" << std::endl;
+						value = "!=";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
 	  	| T_EQEQ
 					{
-						std::cout << "RELOP : " << "==" << std::endl;
+						std::cout << "######RELOP : " << "==" << std::endl;
 						value = "==";
 						S_ast.push_front(make_ast_leaf(value));		
 					}
@@ -674,7 +761,17 @@ relop
 
 logop 
 		: T_OROR
+					{
+						std::cout << "######LOGOP : " << "||" << std::endl;
+						value = "||";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
 	  	| T_ANDAND
+					{
+						std::cout << "######LOGOP : " << "&&" << std::endl;
+						value = "&&";
+						S_ast.push_front(make_ast_leaf(value));		
+					}
 	  	;
 	  
 additive_expression 
@@ -685,8 +782,8 @@ additive_expression
 		| additive_expression '+' term 
 					{
 						 //AST
-						 std::cout << "AST : addition" << std::endl;
-						 std::cout << "AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
+						 std::cout << "######AST : addition" << std::endl;
+						 std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
 						 std::string op = "+";
 						 ast_node *central_node = central_node_creation_exp(op);
 						 S_ast.push_front(central_node);
@@ -728,8 +825,8 @@ additive_expression
 		| additive_expression '-' term 
 					{
 						 //AST
-						 std::cout << "AST : subtraction" << std::endl;
-						 std::cout << "AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
+						 std::cout << "######AST : subtraction" << std::endl;
+						 std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
 						 std::string op = "-";
 						 ast_node *central_node = central_node_creation_exp(op);
 						 S_ast.push_front(central_node);
@@ -780,8 +877,8 @@ term
 	 	| term '*' factor 
 					{
 						 //AST
-						 std::cout << "AST : multiplication" << std::endl;
-						 std::cout << "AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
+						 std::cout << "######AST : multiplication" << std::endl;
+						 std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
 						 std::string op = "*";
 						 ast_node *central_node = central_node_creation(op);
 						 S_ast.push_front(central_node);
@@ -824,8 +921,8 @@ term
      	| term '/' factor
 					{
 						 //AST
-						 std::cout << "AST : division" << std::endl;
-						 std::cout << "AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
+						 std::cout << "######AST : division" << std::endl;
+						 std::cout << "######AST : $1 : " << $1 << " $3 : " << $3 << std::endl;
 						 std::string op = "/";
 						 ast_node *central_node = central_node_creation(op);
 						 S_ast.push_front(central_node);
@@ -887,7 +984,7 @@ factor
 						temp->type = (itr->second).type;
 						$$ = temp;
 						//AST
-						std::cout << "AST : List identifier "<< $1 << std::endl;
+						std::cout << "######AST : List identifier "<< $1 << std::endl;
 						id = $1;
 						S_ast.push_front(make_ast_leaf(id));				
 					 }	
@@ -901,7 +998,7 @@ factor
 						temp->type = 1;
 						$$ = temp;
 						//AST
-						std::cout << "AST : T_INT " << $1 << std::endl;
+						std::cout << "######AST : T_INT " << $1 << std::endl;
 						value = $1;
 						S_ast.push_front(make_ast_leaf(value));
 					}
@@ -914,7 +1011,7 @@ factor
 						temp->type = 2;
 						$$ = temp;
 						//AST
-						std::cout << "AST : T_FLOAT " << $1 << std::endl;
+						std::cout << "######AST : T_FLOAT " << $1 << std::endl;
 						value = $1;
 						S_ast.push_front(make_ast_leaf(value));
 					}
@@ -927,7 +1024,7 @@ factor
 						temp->type = 3;
 					 	$$ = temp;
 						//AST
-						std::cout << "AST : T_STRING " << $1 << std::endl;
+						std::cout << "######AST : T_STRING " << $1 << std::endl;
 						value = $1;
 						S_ast.push_front(make_ast_leaf(value));
 					}
@@ -940,7 +1037,7 @@ factor
 						temp->type = 3;
 						$$ = temp;
 						//AST
-						std::cout << "AST : T_CHAR " << $1 << std::endl;
+						std::cout << "######AST : T_CHAR " << $1 << std::endl;
 						value = $1;
 						S_ast.push_front(make_ast_leaf(value));
 					}

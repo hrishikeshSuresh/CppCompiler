@@ -5,11 +5,10 @@
 
 int global = 100;
 
-int a=10;
-
-if(a==12){
-	int c;
-	int d;
-	c=1;
-	d = c + d;
+int i;
+for(i=10; i<5; i++){
+	int m = 10;
+	if(m==3){
+		int b;
+	}
 }
