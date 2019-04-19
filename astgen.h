@@ -59,7 +59,9 @@ void LevelOrderTraversalAST();
 void print_stack_elements();
 
 // deprecated IF branch
+/*
 void IF_node_create_branch();
+*/
 
 // declare and assigned branch
 void declare_and_assign_branch();
@@ -68,7 +70,7 @@ void declare_and_assign_branch();
 void declare_assign_node_creation();
 
 // popping pattern in loops 
-ast_node *general_declaration_in_loop();
+void general_declaration_in_loop();
 
 // if branch execution
 void IF_Alternate();

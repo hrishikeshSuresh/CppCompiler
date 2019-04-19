@@ -186,6 +186,7 @@ void print_stack_elements(){
 }
 
 // deprecated
+/*
 void IF_node_create_branch(){
 	std::cout << "######Creating new branch" << std::endl; 
 	// popping 'if'
@@ -217,9 +218,10 @@ void IF_node_create_branch(){
 	ast_root->children.push_back(create_branch(cond, branch3));		
 	*/
 	// pushing statement to STATEMENT node
+	/*
 	statement->children.push_back(branch2);
 	LevelOrderTraversalEACHROOT(statement);
-	std::cout << std::endl;
+	std::cout << std::endl;	
 	// pushing condition to COND node
 	cond->children.push_back(branch3);
 	LevelOrderTraversalEACHROOT(if_struct);
@@ -232,11 +234,13 @@ void IF_node_create_branch(){
 	ast_root->children.push_back(branch2);
 	ast_root->children.push_back(branch3);
 	*/
+	/*
 	syn_root->children.push_back(if_struct);	
 	syn_root->children.push_back(cond);
 	syn_root->children.push_back(statement);
 	std::cout << "######Added branches" << std::endl;
 }
+*/
 
 void declare_and_assign_branch(int if_flag, int for_flag){
 	std::string op = "DECLR_STAT";
@@ -289,7 +293,7 @@ void declare_assign_node_creation(){
 	std::cout << "######DECLR_AND_ASSIGN NODE created" << std::endl;
 }
 
-ast_node *general_declaration_in_loop(){
+void general_declaration_in_loop(){
 	std::cout << "######General declaration in loop" << std::endl;
 	std::string declr = "DECLR_STAT";
 	ast_node *temp = new ast_node;
@@ -300,14 +304,56 @@ ast_node *general_declaration_in_loop(){
 	S_ast.pop_front();
 	temp->children.push_back(branch1);
 	temp->children.push_back(branch2);
-	return temp;
+	S_ast.push_front(temp);
 }
 
 // core
 // if
 void IF_Alternate(){
-	std::cout << "######Creating new branch" << std::endl; 
+	std::cout << "######Creating new branch" << std::endl;
+	std::deque<ast_node*> temp;
+	// start with popping
+	ast_node *branch1 = S_ast.front();
+	S_ast.pop_front();
+	std::cout << branch1->symbol << std::endl;
+	// pop till we find for
+	while(branch1->symbol != "if"){
+		std::cout << "adding " << branch1->symbol << std::endl;
+		temp.push_front(branch1);
+		if(S_ast.size() > 0){
+			branch1 = S_ast.front();
+			std::cout << "popping ";
+			std::cout << branch1->symbol << std::endl;
+			S_ast.pop_front();
+		}
+	}
+	// branch1 will contain 'if'
+	ast_node *if_struct = new ast_node;
+	if_struct->symbol = "IF_STRUCT";
+	// for condition
+	ast_node *cond = new ast_node;
+	cond->symbol = "COND";
+	ast_node *branch2 = temp.front();
+	cond->children.push_back(branch2);
+	temp.pop_front();
+	// attach all children 'if'
+	// add the statements
+	ast_node *statement = new ast_node;
+	statement->symbol = "STATEMENT";
+	ast_node *tmp_branch = new ast_node;
+	std::cout << temp.size() << std::endl;
+	while(temp.size() > 0){
+		tmp_branch =  temp.front();
+		temp.pop_front();
+		std::cout << "popping and adding " << tmp_branch->symbol << std::endl;
+		statement->children.push_back(tmp_branch);
+	}
+	if_struct->children.push_back(statement);
+	syn_root->children.push_back(if_struct);
+	std::cout << "######FOR added to the tree" << std::endl;
+	return;
 	// popping 'if'
+	/*
 	ast_node *branch1 = S_ast.front();
 	S_ast.pop_front();
 	// IF_STRUCT is the header of 'if' statement
@@ -354,9 +400,11 @@ void IF_Alternate(){
 	ast_root->children.push_back(create_branch(cond, branch3));		
 	*/
 	// pushing condition to COND node
+	/*	
 	cond->children.push_back(branch3);
 	LevelOrderTraversalEACHROOT(if_struct);
 	std::cout << std::endl;
+	*/	
 	/*
 	LevelOrderTraversalEACHROOT(branch2);
 	LevelOrderTraversalEACHROOT(branch3);
@@ -365,10 +413,12 @@ void IF_Alternate(){
 	ast_root->children.push_back(branch2);
 	ast_root->children.push_back(branch3);
 	*/
+	/*
 	if_struct->children.push_back(cond);
 	if_struct->children.push_back(statement);
 	syn_root->children.push_back(if_struct);	
 	std::cout << "######IF added to the tree" << std::endl;
+	*/
 }
 
 // for branch execution

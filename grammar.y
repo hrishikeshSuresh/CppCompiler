@@ -167,9 +167,10 @@ declaration_statement
 							declare_assign_node_creation();				
 						}
 						*/
-						else if(declare_and_assign_flag == 0 && if_cond_flag == 1){
-							// test
+						else if(declare_and_assign_flag == 0 && (if_cond_flag == 1 || for_flag == 1)){
+							// declaration but not assigned
 							std::cout << "######STATEMENT IN IF LOOP" << std::endl;
+							general_declaration_in_loop();
 						}
 						// if input is int a=10 not in if
 						else if(declare_and_assign_flag == 1 && for_flag == 1){
@@ -494,15 +495,17 @@ expression_stmt
     	;
 
 if_set_flag
-		: { if_cond_flag = 1; }
+		: 			{ 
+						if_cond_flag = 1;
+						id = "if";
+						S_ast.push_front(make_ast_leaf(id)); 
+					}
 		;
 
 selection_statement 
 		: T_IF if_set_flag '(' expression ')' statement
 					{
 						std::cout << "######IF" <<std::endl;
-						id = "if";
-						S_ast.push_front(make_ast_leaf(id));
 						print_stack_elements();
 						//IF_node_create_branch();
 						IF_Alternate();
@@ -528,13 +531,10 @@ for_loop
 		: {} T_FOR  for_set_flag '(' for_assgn_stmt ';' {} expression ';' {} unary_exprn ')' {} statement
 					{
 						std::cout << "######AST : FOR LOOP " << std::endl;
-						/*
-						id = "for";
-						S_ast.push_front(make_ast_leaf(id));					
-						*/
 						print_stack_elements();
 						for_creation();
 						print_stack_elements();
+						for_flag = 0;
 					}
   	   	;
 
