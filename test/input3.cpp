@@ -8,6 +8,7 @@ int global = 100;
 int a=10;
 
 if(a==12){
+	a=10;
 	int c;
 	int d;
 	c=1;

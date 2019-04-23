@@ -49,15 +49,24 @@ ast_node *make_ast_leaf(std::string val){
 void LevelOrderTraversalEACHROOT(ast_node *root){ 
     if (root==NULL) 
         return; 
-    std::queue<ast_node *> q;  
+    std::queue<ast_node *> q;
+	std::cout << "|" << std::endl;
+	std::cout << "|" << std::endl;
+	std::cout << "|" << std::endl;
+	std::cout << "|" << std::endl;  
     q.push(root);  
     while (!q.empty()){
         int n = q.size(); 
         // If this node has children 
         while (n > 0){  
             ast_node *p = q.front(); 
-            q.pop(); 
-            std::cout << p->symbol << " "; 
+            q.pop();
+			if(q.size() > 1)
+            	std::cout << p->symbol << " ------ ";
+			else if(q.size() == 1)
+				std::cout << p->symbol << " ";
+			else
+				std::cout << p->symbol << "EOF" << std::endl;
 			// if there are not children, move to next sibling
 			if((p->children)[0] == NULL)
 				break;
@@ -65,14 +74,10 @@ void LevelOrderTraversalEACHROOT(ast_node *root){
             for (int i=0; i< p->children.size(); i++) 
                 q.push(p->children[i]); 
             n--; 
-        } 
-		/*        
+        }        
 		std::cout << std::endl;
-		*/
     }
-	/*
-	std::cout << "exit" << std::endl;
-	*/ 
+	std::cout  << std::endl; 
 } 
 
 // deprecated
