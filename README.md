@@ -5,3 +5,5 @@
 1. g++ with C++14<br>
 2. Bison<br>
 3. Lex<br>
+
+Refer report/Report.pdf for detailed explanantion of the project.
