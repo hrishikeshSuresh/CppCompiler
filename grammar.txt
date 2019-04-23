@@ -53,188 +53,318 @@ NEQEQ			Not equal to (terminal)
 EQ			Equal to  (terminal)
 ---------------------------------------------
 
-p : header_stmt global_stmt p
-  | global_stmt start
-  | start
-  | /*EMPTY*/
-  ;
+P 
+		: program
+  		;
 
-header_stmt : #include<id.h> header_stmt
-		 | #include "id.h" header_stmt
-		 | #define id exprn header_stmt
-		 | #define func_id(args) (exprn) header_stmt
-		 | /*EMPTY*/
-		 ;
-
-global_stmt : struct-handle global_stmt
-		 | dec_stat; global_stmt; s
-		 | typedef type id; global_stmt
-		 | func_declr; global_stmt
-		 | class-handle gloabal_stmt
-		 | /*EMPTY*/
-		 ;
-
-struct-handle : struct struct_id {struct_mem; func_def}
-		   | typedef struct struct_id {struct_mem; func_def}id
-		   ;
-
-struct_mem : dec_stat,struct_mem
-	      | /*EMPTY*/
-	      ;
-
-func_dclr : type func_id(args)
-
-func_def : type func_id(args){s} func_def
-         | /*EMPTY*/
-         ;
-
-start : ret_type main(){s}
-	 ;
-
-ret_type : void
-	    | int
-	    ;
-
-s : dec_stat assign_exprn; s
-  | assign_exprn; s
-  | unary_exprn; s
-  | iterative-stmts s
-  | return exprn
-  | sel_stmt; s
-  | func_def s
-  | break
-  | continue
-  | goto_label
-  | class-handle s
-  | struct-handle s
-  | /*EMPTY*/
-  ;
-
-class-handle : class class_id { class_mem };
-		  ;
-
-class_mem : dec_stat
-	    | access_specifier:
-	    | type func_id(args){s}
-	    | class_mem
-	    | /*EMPTY*/
-	    ;
-
-iterative-stmts : for_loop | while_loop
-			;
-
-for_loop: for(init_exprn;cond;unary_exprn) {s}
-        | for(init_exprn;cond;unary_exprn) s s
-	   ;
-
-while_loop: while(cond) {s} s
-	     | while(cond) s s
+program	
+		: external_declaration
+		| program external_declaration
 		;
 
-goto_label : label:s goto label
+external_declaration 
+		: header_stmt
+		| global_stmt
+		| main_fun
+		;
+					 
+header_stmt 
+		: '#' T_INCLUDE '<' T_IDH '>'
+		| '#' T_INCLUDE  T_IDH
 		;
 
-access_specifier : public
-	            | private
-	            | protected
-	            ;
+global_stmt 
+		: declaration_statement 
+		| fun_declr
+		| user_defined_ds
+		| statement
+		;
+			
+main_fun 
+		: T_TYPE T_MAIN '(' ')' compound_stmt
+	    ;
+		   
+			
+declaration_statement 
+		: T_TYPE list_identifier ';'
+		;
+		
+list_identifier 
+		: list_identifier ',' variable 
+		| list_identifier ',' init
+		| init 
+		| variable
+		;
+				
+variable 
+		: T_IDENTIFIER 
+		| T_IDENTIFIER array
+		 ;
+		 
+array 
+		: array '[' T_INTEGER_VAL ']'
+	  	| '[' T_INTEGER_VAL ']'
+	  	;
+	  
+init 
+		: var_init
+     	| array_init
+	 	;
+	 
+var_init 
+		: T_IDENTIFIER '=' expression
+		 ;
+		 
+array_init 
+		: T_IDENTIFIER array '=' '{' values '}'
+		;
+		   
+values 
+		: values ',' constant
+   	    | constant
+		;
+	   
+constant 
+		: T_INTEGER_VAL
+		| T_STRING_VAL
+		| T_CHAR_VAL
+		| T_FLOAT_VAL
+		;
+		 
+declarator 
+		: '(' ')'
+		| '(' params ')'
+		;
 
-dec_stat : type list_id
-	     ;
+fun_declr 
+		: T_TYPE T_IDENTIFIER declarator compound_stmt
+		;
+		 
+params_list 
+		: T_TYPE T_IDENTIFIER 
+		| params_list ',' T_TYPE T_IDENTIFIER
+		;
+		 
+params 
+		: params_list
+       	;
+		 
+compound_stmt 
+		: start_paren end_paren
+		| start_paren block_item_list end_paren 
+		;
+			  
+start_paren 
+		: '{'
+		;
 
-init_exprn : assign_exprn,init_exprn
-		   | /*EMPTY*/
-	       ;
+end_paren 
+		: '}' 
+		;	  
+block_item_list 
+		: block_item
+		| block_item_list block_item
+		;
 
-args : type id,args
-     | args,type assign_exprn
-     | /*EMPTY*/
-     ;
+block_item 
+		: declaration_statement
+		| statement
+		;   
+		   
+user_defined_ds 
+		: class
+		| structure
+		;
+				
+class 
+		: T_CLASS T_IDENTIFIER class_body_stmt ';'
+		;
 
-type : int
-     | float
-     | char
-     | double
-     | long
-     | long double
-     | long int
-     | long long
-     | unsigned type
-     ;
+structure 
+		: T_STRUCT T_IDENTIFIER struct_body_stmt ';'
+		;
 
-list_id : id
-	   | id,list_id
-       | id[num]
-	   | /*EMPTY*/
-	   ;
+class_body_stmt  
+		: start_paren end_paren
+		| start_paren class_mems end_paren 
+		;
+				 
+struct_body_stmt  
+		: start_paren end_paren
+		| start_paren struct_mems end_paren 
+		;
 
-values : num
-	  | num,values
-	  ;
+struct_mems 
+		: struct_mem
+		| struct_mems struct_mem
+		;
 
-assign_exprn : id = exprn, assign_exprn
-		  | id[num] = {values}
-		  | /*EMPTY*/
-	        ;
+class_mems 
+		: class_mem
+		| class_mems class_mem
+		;
 
-exprn : (exprn)
-      | exprn+term
-      | exprn-term
-      | exprn bitop term
-      | term
-      ;
+struct_mem 
+		: declaration_statement
+		| fun_declr
+		;
 
-term : term * factor
-     | term/factor
-     | factor
-     ;
+class_mem	
+		:  T_TYPE class_var_declaration ';'
+		|  fun_declr
+		|  access_specifier ':'
+		;
+			
+class_var_declaration 
+		: T_IDENTIFIER
+		| class_var_declaration ',' T_IDENTIFIER 
+		;
 
-factor : id
-       | num
-       ;
+access_specifier 
+		: T_PRIVATE
+        | T_PUBLIC
+		| T_PROTECTED
+		;
+		     
+statement 
+		: expression_stmt
+		| compound_stmt
+  		| iterative_statement
+  		| selection_statement
+		| input_output_statements
+        | return_stmt
+  		;
+		  
+expression_stmt
+    	: ';' 
+    	| expression ';'
+    	;
+selection_statement 
+		: T_IF '(' expression ')' statement
+        | T_IF '(' expression ')' statement T_ELSE else_stmt statement
+        ;
+					
+iterative_statement 
+		: for_loop
+		| while_loop
+  		;
 
-cond : log_exprn
-     | rel_exprn
-     | assign_exprn
-     ;
+for_loop 
+		: T_FOR '(' for_assgn_stmt ';' {} expression ';' unary_exprn ')' statement
+  	   	;
 
-rel_exprn : id relop id
-	     ;
+for_assgn_stmt 
+		: T_TYPE for_decl_stmt
+		| assignment_expression
+		;
 
-relop : LT
-      | GT
-      | LTEQ
-      | GTEQ
-      | NEQEQ
-      | EQEQ
-      ;
+for_decl_stmt 
+		: T_IDENTIFIER '=' expression 
+		| for_decl_stmt ',' T_IDENTIFIER '=' expression
+		;
 
-log_exprn : id logop id
-          ;
+while_loop 
+		: T_WHILE '(' expression ')' statement
+  		;
+		   
+return_stmt 
+		: T_RETURN ';' 
+		| T_RETURN expression ';'
+		;
+			
+expression 
+		: assignment_expression
+		| simple_expression
+		;
+		   
+assignment_expression 
+		: T_IDENTIFIER '=' expression 							  
+		| unary_exprn
+		;
+					  
+unary_exprn 
+		: T_ADDADD T_IDENTIFIER
+		| T_MINMIN T_IDENTIFIER
+       	| postfix_expression
+      	| T_IDENTIFIER uop_shorthd expression
+		;
+			
+postfix_expression 
+		: T_IDENTIFIER T_ADDADD
+		| T_IDENTIFIER T_MINMIN
+		;
 
-logop : OROR
-      | ANDAND
-      | XOR
-      ;
+uop_shorthd  
+		: T_ADDEQ
+        | T_MINEQ
+        | T_MULEQ
+        | T_DIVEQ
+		;
+			 
+simple_expression 
+		: additive_expression 
+		| additive_expression relop additive_expression
+		| additive_expression logop additive_expression
+		| additive_expression bitop additive_expression
+		;
+				  
+bitop 
+		: T_OR
+   	  	| T_AND
+	  	| T_XOR
+	  	| T_LRSHIFT
+	  	| T_LLSHIFT
+	  	;
+				  
+relop 
+		: '<'
+      	| '>'
+	  	| T_LTEQ
+	  	| T_GTEQ
+	  	| T_NEQEQ
+	  	| T_EQEQ
+	  	;
 
-unary_exprn : id uop exprn
-	       ;
+logop 
+		: T_OROR
+	  	| T_ANDAND
+	  	;
+	  
+additive_expression 
+		: term 
+		| additive_expression '+' term 
+		| additive_expression '-' term
+		| '+' additive_expression %prec '*'
+		| '-' additive_expression %prec '*'
+		;
 
-uop  : ADDEQ
-     | MINEQ
-     | MULEQ
-     | DIVEQ
-     ;
+term 
+		: factor
+	 	| term '*' factor	
+     	| term '/' factor
+  	 	;
 
-sel_stmt : IF(cond) s
-         | IF(cond) s else s
-         | assign_exprn ? s:s
-         ;
+factor 
+		: '(' expression ')'
+	   	| T_IDENTIFIER
+	   	| call
+	   	| T_INTEGER_VAL
+	   	| T_FLOAT_VAL
+	   	| T_STRING_VAL
+	   	| T_CHAR_VAL
+	   	;
 
-bitop : OR
-      | AND
-      | XOR
-      | RSHIFT
-      | LSHIFT
-      | ASHIFT
-      ;
+call 
+		: T_IDENTIFIER '(' ')'
+	 	| T_IDENTIFIER '(' args ')'
+	 	;
+
+args 	: expression
+	 	| expression ',' args
+	 	;
+
+input_output_statements 
+		: T_COUT T_LLSHIFT expression ';'
+		| T_CIN T_LRSHIFT T_IDENTIFIER ';'
+		;
+
