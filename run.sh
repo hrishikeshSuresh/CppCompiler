@@ -29,4 +29,25 @@ tput sgr0
 g++ -std=c++14 -Wall lex.yy.c y.tab.c -ll -ly
 echo -e "${CYAN}		Now run ./a.out with your input file as an argument${CYAN}"
 tput sgr0
-#./a.out input.cpp > output.txt
+./a.out test/input9.cpp > output/ast_output.txt
+echo -e "Abstract Syntax Tree generated"
+echo -e "\e[4m"
+echo -e "${PURPLE}			Compiling grammar....${PURPLE}"
+tput sgr0
+echo -e "${DGRAY}"
+yacc -d icg_grammar.y
+tput sgr0
+echo -e "\e[4m"
+echo -e "${YELLOW}			Compiling lexer....${YELLOW}"
+tput sgr0
+lex icg_scanner.l
+echo -e "\e[4m"
+echo -e "${WHITE}			Compiling all files....${WHITE}"
+tput sgr0
+g++ -std=c++14 -Wall lex.yy.c y.tab.c -ll -ly
+echo -e "${CYAN}		Now run ./a.out with your input file as an argument${CYAN}"
+tput sgr0
+./a.out test/input9.cpp > output/junk.txt
+echo -e "Intermediate Three-Address Code generated"
+python3 dead_code_elimination.py > output/junk.txt
+echo -e "Code Optimization done. Dead Code Elimination"

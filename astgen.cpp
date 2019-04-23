@@ -46,14 +46,14 @@ ast_node *make_ast_leaf(std::string val){
 
 // core
 // Prints the branch in pre-order like fashion
-void LevelOrderTraversalEACHROOT(ast_node *root){ 
+void LevelOrderTraversalEACHROOT(ast_node *root){
     if (root==NULL) 
         return; 
     std::queue<ast_node *> q;
-	std::cout << "|" << std::endl;
-	std::cout << "|" << std::endl;
-	std::cout << "|" << std::endl;
-	std::cout << "|" << std::endl;  
+	std::cout << "||" << std::endl;
+	std::cout << "||" << std::endl;
+	std::cout << "||" << std::endl;
+	std::cout << "||" << std::endl;  
     q.push(root);  
     while (!q.empty()){
         int n = q.size(); 
@@ -62,11 +62,13 @@ void LevelOrderTraversalEACHROOT(ast_node *root){
             ast_node *p = q.front(); 
             q.pop();
 			if(q.size() > 1)
-            	std::cout << p->symbol << " ------ ";
-			else if(q.size() == 1)
-				std::cout << p->symbol << " ";
+            	std::cout << p->symbol << "		";
 			else
-				std::cout << p->symbol << "EOF" << std::endl;
+				std::cout << p->symbol << " ";
+			/*			
+			else
+				std::cout << p->symbol << std::endl;
+			*/
 			// if there are not children, move to next sibling
 			if((p->children)[0] == NULL)
 				break;
@@ -74,11 +76,23 @@ void LevelOrderTraversalEACHROOT(ast_node *root){
             for (int i=0; i< p->children.size(); i++) 
                 q.push(p->children[i]); 
             n--; 
-        }        
-		std::cout << std::endl;
+        }
+		/*
+		if(q.size() == 0)
+			std::cout << std::endl;
+		else
+			std::cout << " ";
+		*/
+		std::cout << std::endl;		
+		/*
+		std::cout << "|" << std::endl;
+		std::cout << "|" << std::endl;
+		std::cout << "|" << std::endl;
+		std::cout << "|" << std::endl;
+		*/    
     }
-	std::cout  << std::endl; 
-} 
+	//std::cout  << std::endl; 
+}
 
 // deprecated
 // create a branches on node
@@ -189,63 +203,6 @@ void print_stack_elements(){
 	}
 	std::cout << "-----------------" << std::endl;
 }
-
-// deprecated
-/*
-void IF_node_create_branch(){
-	std::cout << "######Creating new branch" << std::endl; 
-	// popping 'if'
-	ast_node *branch1 = S_ast.front();
-	S_ast.pop_front();
-	// popping exprn/cond
-	ast_node *branch2 = S_ast.front();
-	S_ast.pop_front();
-	// popping statement
-	ast_node *branch3 = S_ast.front();
-	S_ast.pop_front();
-	// IF_STRUCT is the header of 'if' statement
-	ast_node *if_struct =  new ast_node;
-	if_struct->symbol = "IF_STRUCT";
-	if_struct->children.push_back(branch1);
-	// COND is the header of condition
-	std::string condition_symbol = "COND";
-	// STATEMENT is the header of statement
-	std::string statement_symbol = "STATEMENT";
-	// new node for statement branch
-	ast_node *statement = new ast_node;
-	statement->symbol = statement_symbol;
-	// new node for condition branch
-	ast_node *cond = new ast_node;
-	cond->symbol = condition_symbol;
-	std::cout << "######Added node names" << std::endl;
-	/*
-	ast_root->children.push_back(create_branch(statement, branch2));
-	ast_root->children.push_back(create_branch(cond, branch3));		
-	*/
-	// pushing statement to STATEMENT node
-	/*
-	statement->children.push_back(branch2);
-	LevelOrderTraversalEACHROOT(statement);
-	std::cout << std::endl;	
-	// pushing condition to COND node
-	cond->children.push_back(branch3);
-	LevelOrderTraversalEACHROOT(if_struct);
-	std::cout << std::endl;
-	/*
-	LevelOrderTraversalEACHROOT(branch2);
-	LevelOrderTraversalEACHROOT(branch3);
-	*/
-	/*
-	ast_root->children.push_back(branch2);
-	ast_root->children.push_back(branch3);
-	*/
-	/*
-	syn_root->children.push_back(if_struct);	
-	syn_root->children.push_back(cond);
-	syn_root->children.push_back(statement);
-	std::cout << "######Added branches" << std::endl;
-}
-*/
 
 void declare_and_assign_branch(int if_flag, int for_flag, int while_flag){
 	std::string op = "DECLR_STAT";
