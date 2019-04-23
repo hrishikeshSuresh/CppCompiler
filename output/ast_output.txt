@@ -1,0 +1,248 @@
+# sent
+ < sent
+> sent
+ ( sent
+) sent
+ { sent
+		  = sent
+ ######AST : T_INT 11
+######AST : leaf created at 11
+; sent
+######AST : var_init Assignment
+######AST : leaf created at b
+######AST : $1 : b $3 : 0xb335f0
+stack contents
+-----------------
+not empty
+b
+11
+-----------------
+######DECLARE & ASSIGN FLAG set to 1
+######AST : declaration_statement Type int
+stack contents
+-----------------
+not empty
+b
+11
+-----------------
+######AST : leaf created at int
+stack contents
+-----------------
+not empty
+int
+b
+11
+-----------------
+######DECLR_AND_ASSIGN BRANCH declare_and_assign_branch()
+######LEAFS : int b 11
+######AST : node created at DECLR_STAT
+node pushed into tree
+######AST : 
+Inserted b for the first time with linenumber 5!
+	######AST : leaf created at while
+( sent
+ > sent
+######AST : List identifier b
+######AST : leaf created at b
+######RELOP : >
+######AST : leaf created at >
+ ######AST : T_INT 10
+######AST : leaf created at 10
+) sent
+stack contents
+-----------------
+not empty
+10
+>
+b
+while
+-----------------
+######AST : relop 
+######AST : $1 : 0xb33c00 $3 : 0xb33d40
+######AST : node created at >
+	{ sent
+		 ; sent
+######AST : List identifier y
+######AST : leaf created at y
+######AST : declaration_statement Type int
+stack contents
+-----------------
+not empty
+y
+>
+while
+-----------------
+######AST : leaf created at int
+stack contents
+-----------------
+not empty
+int
+y
+>
+while
+-----------------
+######STATEMENT IN IF LOOP
+######General declaration in loop
+######AST : 
+Inserted y for the first time with linenumber 8!
+		 = sent
+  + sent
+######AST : List identifier y
+######AST : leaf created at y
+ ######AST : T_INT 1
+######AST : leaf created at 1
+; sent
+######AST : addition
+######AST : $1 : 0xb341d0 $3 : 0xb342a0
+######NODE CREATION : LR EXPRESSION EVALUATION central_node_creation_exp()
+######Popping 1 and y
+######AST : node created at +
+
+######AST : assignment_exp Assignment
+stack contents
+-----------------
+not empty
++
+DECLR_STAT
+>
+while
+-----------------
+######AST : $1 : y $3 : 0xb343a0
+######AST : leaf created at y
+######NODE CREATION : RL EXPRESSION EVALUATION central_node_creation()
+######Popping + and y
+######AST : node created at =
+######IF/FOR/WHILE flag detected
+
+	} sent
+######AST : FOR LOOP 
+stack contents
+-----------------
+not empty
+=
+DECLR_STAT
+>
+while
+-----------------
+######Creating new branch
+=
+adding =
+popping DECLR_STAT
+adding DECLR_STAT
+popping >
+adding >
+popping while
+2
+popping and adding DECLR_STAT
+popping and adding =
+######WHILE added to the tree
+stack contents
+-----------------
+empty
+-----------------
+	  = sent
+ ######AST : T_INT 10
+######AST : leaf created at 10
+; sent
+######AST : var_init Assignment
+######AST : leaf created at c
+######AST : $1 : c $3 : 0xb33bc0
+stack contents
+-----------------
+not empty
+c
+10
+-----------------
+######DECLARE & ASSIGN FLAG set to 1
+######AST : declaration_statement Type int
+stack contents
+-----------------
+not empty
+c
+10
+-----------------
+######AST : leaf created at int
+stack contents
+-----------------
+not empty
+int
+c
+10
+-----------------
+######DECLR_AND_ASSIGN BRANCH declare_and_assign_branch()
+######LEAFS : int c 10
+######AST : node created at DECLR_STAT
+node pushed into tree
+######AST : 
+Inserted c for the first time with linenumber 12!
+} sent
+Parsing successful!
+
+Identifier Name	c
+Scope Id	1
+Type		1
+Value		10
+Line Numbers	
+12 
+Size		0
+---------------------
+Identifier Name	b
+Scope Id	1
+Type		1
+Value		11
+Line Numbers	
+5 
+Size		0
+---------------------
+
+Identifier Name	y
+Scope Id	2
+Type		1
+Value		6419713
+Line Numbers	
+8 
+Size		0
+---------------------
+
+Checking stack
+stack contents
+-----------------
+empty
+-----------------
+SYNTAX TREE (BRANCH-WISE - LevelOrder)
+<body>
+||
+||
+||
+||
+DECLR_STAT 
+int		
+b 
+11 
+
+||
+||
+||
+||
+WHILE_STRUCT 
+while		
+COND STATEMENT 
+>		DECLR_STAT		=		
+10		
+b		
+int		
+y		
+y 
++ 
+y 
+1 
+
+||
+||
+||
+||
+DECLR_STAT 
+int		
+c 
+10 
+

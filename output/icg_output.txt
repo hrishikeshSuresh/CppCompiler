@@ -1,0 +1,20 @@
+
+main:
+int b = 11
+ L0:
+
+t0 = b>10
+if t0 goto L1
+goto G0
+ 
+L1:
+int y
+ 
+t1 = y + 1
+y = t1
+
+goto L0
+G0:
+
+ int c = 10
+
